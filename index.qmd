@@ -21,35 +21,12 @@ editor:
 Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
 to edit)
 
-
-
 ## Introduction
 
-The introduction should:
+Missing data is a common concern, especially in the health care sector where datasets like Electronic Health Records (EHR) are sometimes incomplete for a variety of reasons, includes technological issues, in applicability, or information loss. If missing data is not appropriately considered, it might result in biased results, reduced reliability, and compromising conclusions in clinical epidemiology and other healthcare research [@salgado2016missing]. Results can be affected by missing values, which is the most common problem for statistical models that depend on complete datasets. Either imputation or elimination can be used to address missing data in order to eleminate these problems. Imputation is the recommended method since it lowers the possibility of loss of data and protects the integrity of the dataset [@pedersen2017missing].
 
--   Develop a storyline that captures attention and maintains interest.
+Missing completely at random (MCAR) and missing not at random (MNAR) are two examples of the underlying mechanisms of missingness that heavily influence the choice of imputation technique. Imputation techniques range from simple techniques like mean substitution to more complex strategies like multiple imputation, which guesses missing values by generating multiple data sets and merging the resulting results to take uncertainty into account [@pedersen2017missing]. The ability of these highly sophisticated methods, primarily multiple imputation, to minimize bias and maintain the accuracy of investigations has made them popular in clinical research [@salgado2016missing]. The purpose of this project is to investigate and contrast different imputation methods, examining how well they handle diverse situations involving missing data and maintaining the validity of datasets in clinical epidemiology and healthcare research.
 
--   Your audience is your peers
-
--   Clearly state the problem or question you're addressing.
-
-<!-- -->
-
--   Introduce why it is relevant needs.
-
--   Provide an overview of your approach.
-
-Example of writing including citing references:
-
-*This is an introduction to ..... regression, which is a non-parametric
-estimator that estimates the conditional expectation of two variables
-which is random. The goal of a kernel regression is to discover the
-non-linear relationship between two random variables. To discover the
-non-linear relationship, kernel estimator or kernel smoothing is the
-main method to estimate the curve for non-parametric statistics. In
-kernel estimator, weight function is known as kernel function
-[@efr2008]. Cite this paper [@bro2014principal]. The GEE [@wang2014].
-The PCA [@daffertshofer2004pca]*. Topology can be used in machine learning [@adams2021topology]
 
 *This is my work and I want to add more work...*
 
@@ -73,7 +50,6 @@ $$
 M_n(x) = \sum_{i=1}^{n} W_n (X_i) Y_i  \tag{1}
 $$$W_n(x)$ *is the sum of weights that belongs to all real numbers.
 Weights are positive numbers and small if* $X_i$ *is far from* $x$*.*
-
 
 *Another equation:*
 
