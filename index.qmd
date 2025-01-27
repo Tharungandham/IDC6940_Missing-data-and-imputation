@@ -27,6 +27,12 @@ Missing data is a common concern, especially in the health care sector where dat
 
 Missing completely at random (MCAR) and missing not at random (MNAR) are two examples of the underlying mechanisms of missingness that heavily influence the choice of imputation technique. Imputation techniques range from simple techniques like mean substitution to more complex strategies like multiple imputation, which guesses missing values by generating multiple data sets and merging the resulting results to take uncertainty into account [@pedersen2017missing]. The ability of these highly sophisticated methods, primarily multiple imputation, to minimize bias and maintain the accuracy of investigations has made them popular in clinical research [@salgado2016missing]. The purpose of this project is to investigate and contrast different imputation methods, examining how well they handle diverse situations involving missing data and maintaining the validity of datasets in clinical epidemiology and healthcare research.
 
+Handling missing data is a major problem in research in a various fields, like the social sciences, healthcare, and finance. If missing values are not handled properly, they can result in biased analyses, decreased statistical power, and incorrect findings. Missing values are always produced by survey non-responses, equipment failures, or data entry errors [@alwateer2024missing]. 
+A variety of imputation techniques have been developed to mitigate these issues, ranging from traditional methods like MissForest and Last Observation Carried Forward (LOCF) to advanced approaches such as machine learning and deep learning models. These methods vary in their suitability depending on the data’s characteristics and the nature of the missingness.
+The consequences of missing data are more severe in clinical structured datasets because they can affect the patient care and decision-making. In this regard, [@afkanpour2024identify] conducted a thorough examination of imputation methods, stressing importance of matching methods to characteristics of the dataset including missingness patterns and reasons. To guarantee data reliability and enhance the validity of research findings across different disciplines, both articles emphasize how important it is to choose the right imputation method. This paper focus to explore these techniques further, focusing on their applications, challenges, and potential improvements in handling the missing data.
+
+
+
 
 *This is my work and I want to add more work...*
 
