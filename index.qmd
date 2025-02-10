@@ -1,7 +1,7 @@
 ---
 title: "Missing data and imputation"
 subtitle: "This is a Report Template Quarto"
-author: "Tharun Teja Gandham (Advisor: Dr. Cohen)"
+author: "Tharun Teja Gandham, Mourya Rai Papolu (Advisor: Dr. Cohen)"
 date: '`r Sys.Date()`'
 format:
   html:
@@ -30,7 +30,6 @@ Missing completely at random (MCAR) and missing not at random (MNAR) are two exa
 Handling missing data is a major problem in research in a various fields, like the social sciences, healthcare, and finance. If missing values are not handled properly, they can result in biased analyses, decreased statistical power, and incorrect findings. Missing values are always produced by survey non-responses, equipment failures, or data entry errors [@alwateer2024missing]. 
 A variety of imputation techniques have been developed to mitigate these issues, ranging from traditional methods like MissForest and Last Observation Carried Forward (LOCF) to advanced approaches such as machine learning and deep learning models. These methods vary in their suitability depending on the data’s characteristics and the nature of the missingness.
 The consequences of missing data are more severe in clinical structured datasets because they can affect the patient care and decision-making. In this regard, [@afkanpour2024identify] conducted a thorough examination of imputation methods, stressing importance of matching methods to characteristics of the dataset including missingness patterns and reasons. To guarantee data reliability and enhance the validity of research findings across different disciplines, both articles emphasize how important it is to choose the right imputation method. This paper focus to explore these techniques further, focusing on their applications, challenges, and potential improvements in handling the missing data.
-
 
 
 
