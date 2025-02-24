@@ -23,11 +23,11 @@ to edit)
 
 ## Introduction
 
-Across healthcare, social sciences and finance sectors missing data continues as an extensive problem because it creates biased outcomes and reduces research reliability and weakens research conclusions unless appropriate data handling methods are used [@salgado2016missing]. The Electronic Health Records (EHR) dataset faces high vulnerability to missing data from technological breakdowns as well as human mistakes and data loss incidents. In various fields missing data originates from survey non-responses and equipment failures as well as data entry errors [@alwateer2024missing]. Improper handling of missing data leads to severe consequences on the quality of research findings and decision-making processes particularly when analyzing clinical epidemiology and structured datasets according to Afkanpour, Hosseinzadeh, and Tabesh (2024).
+Across healthcare, social sciences and finance sectors missing data continues as an extensive problem because it creates biased outcomes and reduces research reliability and weakens research conclusions unless appropriate data handling methods are used [@salgado2016missing]. The Electronic Health Records (EHR) dataset faces high vulnerability to missing data from technological breakdowns as well as human mistakes and data loss incidents. In various fields missing data originates from survey non-responses and equipment failures as well as data entry errors [@alwateer2024missing]. Improper handling of missing data leads to severe consequences on the quality of research findings and decision-making processes particularly when analyzing clinical epidemiology and structured datasets. 
 
-The solution for this issue requires researchers to implement imputation techniques that provide estimated values for missing data points. Various imputation methods exist which include basic methods like mean substitution and advanced techniques using multiple imputation along with machine learning models. The selection of a method for imputation requires knowledge of the missing data pattern because it can be MCAR or MAR or MNAR. Mean imputation and listwise deletion remain straightforward to use yet they produce biases or overlook missing value uncertainty [@pedersen2017missing]. Research by Alwateer et al. (2024) proves that multiple imputation and K-Nearest Neighbors (KNN) and Random Forests machine learning models effectively manage complex datasets that have high missingness levels and non-linear relationships. Proper evaluation procedures must be conducted because these techniques need to balance both computational efficiency and accuracy levels.
+The solution for this issue requires researchers to implement imputation techniques that provide estimated values for missing data points. Various imputation methods exist which include basic methods like mean substitution and advanced techniques using multiple imputation along with machine learning models. The selection of a method for imputation requires knowledge of the missing data pattern because it can be MCAR or MAR or MNAR. Mean imputation and listwise deletion remain straightforward to use yet they produce biases or overlook missing value uncertainty [@pedersen2017missing].Multiple imputation and K-Nearest Neighbors (KNN) and Random Forests machine learning models effectively manage complex datasets that have high missingness levels and non-linear relationships. Proper evaluation procedures must be conducted because these techniques need to balance both computational efficiency and accuracy levels.
 
-The selection of imputation methods relies on both the dataset characteristics and the nature of missing data according to recent research findings. Research on 58 articles demonstrates traditional methods work best for data sets with straightforward missingness patterns but deep learning and hybrid models deliver superior results for complex data patterns (Afkanpour, Hosseinzadeh, and Tabesh, 2024). The social science field demonstrates that semi-parametric techniques including predictive mean matching with hot deck imputation deliver superior results compared to fully parametric methods for item-nonresponse data according to [@durrant2005imputation]. The research emphasizes the requirement for imputation approaches which match the unique needs of datasets along with their associated research goals.
+The selection of imputation methods relies on both the dataset characteristics and the nature of missing data according to recent research findings. Research on 58 articles demonstrates traditional methods work best for data sets with straightforward missingness patterns but deep learning and hybrid models deliver superior results for complex data patterns. The social science field demonstrates that semi-parametric techniques including predictive mean matching with hot deck imputation deliver superior results compared to fully parametric methods for item-nonresponse data according to [@durrant2005imputation]. The research emphasizes the requirement for imputation approaches which match the unique needs of datasets along with their associated research goals.
 
 The analysis evaluates five imputation approaches based on mean, mode, regression, K-Nearest Neighbors (KNN), and Multiple Imputation by Chained Equations (MICE) through application on the well-known Titanic dataset. The research objective is to determine which of these five methods produces the best results for handling missing data in structured datasets so researchers can guarantee data reliability and improve their research findings' validity. The research findings from this analysis will expand existing knowledge about imputation methods and supply actionable tips to scientists and practitioners who need to handle missing data.
 
@@ -93,10 +93,83 @@ $$
 ### Data Exploration and Visualization
 
 -   Describe your data sources and collection process.
+    (https://www.kaggle.com/c/titanic/data)
+      The Titanic dataset from Kaggle is a widely used dataset for data analysis and machine learning projects. It contains information about the passengers aboard the Titanic, including whether they survived or not. The dataset includes features such as:
+•	PassengerId: A unique identifier for each passenger.
+•	Survived: Whether the passenger survived (1) or not (0).
+•	Pclass: The ticket class (1st, 2nd, or 3rd), which is a proxy for socio-economic status.
+•	Name: The name of the passenger.
+•	Sex: The gender of the passenger (male or female).
+•	Age: The age of the passenger.
+•	SibSp: The number of siblings/spouses aboard the Titanic.
+•	Parch: The number of parents/children aboard the Titanic.
+•	Ticket: The ticket number.
+•	Fare: The fare paid for the ticket.
+•	Cabin: The cabin number (many missing values).
+•	Embarked: The port of embarkation (C = Cherbourg, Q = Queenstown, S = Southampton).
 
 -   Present initial findings and insights through visualizations.
 
+
+```{r}
+install.packages("ggplot2")
+install.packages("naniar")
+```
+
+
+```{r}
+library(dplyr)
+#titanic dataset
+train<-read.csv("train.csv")
+# Replace empty strings with NA in specific columns
+train <- train %>%
+  mutate(
+    Cabin = na_if(Cabin, ""),
+    Embarked = na_if(Embarked, "")
+  )
+head(train)
+```
+```{r}
+#missing values column wise
+colSums(is.na(train))
+```
+Age column has 177 missing values 
+cabin column has large number of missing vaklues 687
+similarlly embarked column has 2 missing vaklues.
+
 -   Highlight unexpected patterns or anomalies.
+
+```{r}
+# creating a data frame to show the missing values percentage
+missing_data<-data.frame(
+  column_name=names(train),
+  missing_val=colSums(is.na(train)),
+  missing_percent=colSums(is.na(train)/nrow(train))*100
+)
+
+print(missing_data)
+
+```
+The Titanic dataset has missing values primarily in the Age and Cabin columns, with 177 (19.87%) and 687 (77.10%) missing entries, respectively. The Embarked column has only 2 (0.22%) missing values, which is negligible. All other columns, such as PassengerId, Survived, and Sex, are complete with no missing data, making them reliable for analysis.
+
+
+
+
+```{r}
+library(ggplot2)
+#visualization of my data set through ggplot
+ggplot(missing_data,aes(x=column_name,y=missing_val))+
+  geom_bar(stat="identity",fill="blue")+
+  labs(title="missing values in titanic data set", x="column_names", y="number of missing values")+
+  theme_bw()
+```
+
+```{r}
+library(naniar)
+vis_miss(train)+
+  labs(title="missingness pattern in dataset")
+```
+
 
 A study was conducted to determine how...
 
