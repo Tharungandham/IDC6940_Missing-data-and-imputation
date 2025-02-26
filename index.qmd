@@ -95,25 +95,27 @@ $$
 -   Describe your data sources and collection process.
     (https://www.kaggle.com/c/titanic/data)
       The Titanic dataset from Kaggle is a widely used dataset for data analysis and machine learning projects. It contains information about the passengers aboard the Titanic, including whether they survived or not. The dataset includes features such as:
-•	PassengerId: A unique identifier for each passenger.
-•	Survived: Whether the passenger survived (1) or not (0).
-•	Pclass: The ticket class (1st, 2nd, or 3rd), which is a proxy for socio-economic status.
-•	Name: The name of the passenger.
-•	Sex: The gender of the passenger (male or female).
-•	Age: The age of the passenger.
-•	SibSp: The number of siblings/spouses aboard the Titanic.
-•	Parch: The number of parents/children aboard the Titanic.
-•	Ticket: The ticket number.
-•	Fare: The fare paid for the ticket.
-•	Cabin: The cabin number (many missing values).
-•	Embarked: The port of embarkation (C = Cherbourg, Q = Queenstown, S = Southampton).
+- PassengerId: A unique identifier for each passenger.
+-	Survived: Whether the passenger survived (1) or not (0).
+-	Pclass: The ticket class (1st, 2nd, or 3rd), which is a proxy for socio-economic status.
+-	Name: The name of the passenger.
+-	Sex: The gender of the passenger (male or female).
+-	Age: The age of the passenger.
+-	SibSp: The number of siblings/spouses aboard the Titanic.
+-	Parch: The number of parents/children aboard the Titanic.
+-	Ticket: The ticket number.
+-	Fare: The fare paid for the ticket.
+-	Cabin: The cabin number (many missing values).
+-	Embarked: The port of embarkation (C = Cherbourg, Q = Queenstown, S = Southampton).
 
 -   Present initial findings and insights through visualizations.
 
 
 ```{r}
 install.packages("ggplot2")
+library(ggplot2)
 install.packages("naniar")
+library(naniar)
 ```
 
 
@@ -133,9 +135,9 @@ head(train)
 #missing values column wise
 colSums(is.na(train))
 ```
-Age column has 177 missing values 
-cabin column has large number of missing vaklues 687
-similarlly embarked column has 2 missing vaklues.
+- Age column has 177 missing values 
+- cabin column has large number of missing vaklues 687
+- similarlly embarked column has 2 missing vaklues.
 
 -   Highlight unexpected patterns or anomalies.
 
@@ -153,54 +155,27 @@ print(missing_data)
 The Titanic dataset has missing values primarily in the Age and Cabin columns, with 177 (19.87%) and 687 (77.10%) missing entries, respectively. The Embarked column has only 2 (0.22%) missing values, which is negligible. All other columns, such as PassengerId, Survived, and Sex, are complete with no missing data, making them reliable for analysis.
 
 
-
-
 ```{r}
-library(ggplot2)
+
 #visualization of my data set through ggplot
 ggplot(missing_data,aes(x=column_name,y=missing_val))+
   geom_bar(stat="identity",fill="blue")+
   labs(title="missing values in titanic data set", x="column_names", y="number of missing values")+
   theme_bw()
+
 ```
 
 ```{r}
-library(naniar)
+
 vis_miss(train)+
   labs(title="missingness pattern in dataset")
 ```
-
-
-A study was conducted to determine how...
-
-```{r, warning=FALSE, echo=T, message=FALSE}
-# loading packages 
-library(tidyverse)
-library(knitr)
-library(ggthemes)
-library(ggrepel)
-library(dslabs)
-```
-
-```{r, warning=FALSE, echo=TRUE}
-# Load Data
-kable(head(murders))
-
-ggplot1 = murders %>% ggplot(mapping = aes(x=population/10^6, y=total)) 
-
-  ggplot1 + geom_point(aes(col=region), size = 4) +
-  geom_text_repel(aes(label=abb)) +
-  scale_x_log10() +
-  scale_y_log10() +
-  geom_smooth(formula = "y~x", method=lm,se = F)+
-  xlab("Populations in millions (log10 scale)") + 
-  ylab("Total number of murders (log10 scale)") +
-  ggtitle("US Gun Murders in 2010") +
-  scale_color_discrete(name = "Region")+
-      theme_bw()
-  
+```{r}
 
 ```
+
+
+
 
 ### Modeling and Results
 
