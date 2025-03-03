@@ -1,7 +1,6 @@
 ---
-title: "Missing data and imputation"
-subtitle: "This is a Report Template Quarto"
-author: "Tharun Teja Gandham, Mourya Rai Papolu (Advisor: Dr. Cohen)"
+title: "Missing Data and Imputation"
+author: "Tharun Teja Gandham & Mourya Rai Papolu (Advisor: Dr. Cohen)"
 date: '`r Sys.Date()`'
 format:
   html:
@@ -16,10 +15,15 @@ execute:
 editor: 
   markdown: 
     wrap: 72
+header-includes:
+  - |
+    <style>
+      body {
+        background: linear-gradient(to right, #7db5e3, #d3d3d3); /* Change this color as needed */
+      }
+    </style>
 ---
 
-Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
-to edit)
 
 ## Introduction
 
@@ -61,40 +65,102 @@ Hybrid methods, combining traditional methods and machine learning, also deliver
 
 *This is my work and I want to add more work...*
 
-## Methods
+## Imputation Methods
 
 -   Detail the models or algorithms used.
 
+#### 1.Mean and Mode Imputation
+
+Mean and mode imputation are simple methods that replace missing values with the average (for numerical data) or most common value (for categorical data) of the observed values.
+
+Imputation with mean involves substituting missing values with the arithmetic mean calculated from observed values.
+
+This method replaces missing values by using the mode which represents the most frequent value present in observed data points.
+
+The implementation of these methods remains straightforward yet data distortion may occur when missing values exceed a certain threshold [@pedersen2017missing] [@afkanpour2024identify].
+
+The mean imputation formula is:
+
+$$
+\hat{x}_i = \bar{x} = \frac{1}{n} \sum_{j=1}^{n} x_j
+$$
+	
+where x^i is the imputed value, xˉ is the mean of the observed values, n is the number of observed values, and xj is the j-th observed value [@pedersen2017missing] [@afkanpour2024identify].
+
+ Mode Imputation:
+$$
+\hat{x}_i=mode(x)
+$$
+where mode(x)mode(x) is the most frequently occurring value in the dataset [@pedersen2017missing] [@afkanpour2024identify].
+
+	
+
+#### 2.Regression Imputation
+A regression model enables regression imputation to predict missing values by analyzing the connections between other variables in the dataset. For example:
+
+The Age column's missing values can be predicted with the help of Pclass and Fare variables.
+
+The method requires linear variable relationships as its foundation but provides advanced handling compared to mean/mode imputation (Little & Rubin, 2002; [@farhangfar2007novel].
+
+Regression Model:
+The regression imputation formula is:
+
+$$
+\begin{align}
+\hat{x}_i &= \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_p x_p + \epsilon_i \\
+\text{where} \quad \beta_0 &= \text{intercept}, \quad \beta_1, \dots, \beta_p = \text{coefficients}
+\end{align}
+$$
+where x^i is the predicted value, β0,β1,…,βp are the regression coefficients, and ϵi is the error term [@yadav2024computational]; [@little2019statistical].
+
+#### 3.K-Nearest Neighbors (KNN) Imputation
+   KNN imputation allows advanced replacement of missing values through an analysis of similar data points (neighbors) in the dataset. Here’s how it works:
+
+The KNN algorithm locates k data points with similar features as each missing value to make its imputation decision.
+
+The algorithm obtains the average measurement point for numerical data and most frequent value for categorical data from the k nearest neighbors.
+
+The impute.knn() function from the impute package in R enables users to execute KNN imputation. KNN proves useful when data points that are similar in nature tend to possess similar values [@alwateer2024missing]; .
+
+KNN Formula:
+The KNN imputation formula is:
+
+$$
+\hat{x}_i = \frac{1}{k} \sum_{j \in N_k(i)} x_j \label{eq:knn}
+$$
+
+As shown in Equation , KNN imputation replaces missing values with the average of the nearest neighbors.
+where x^i is the imputed value, Nk(i) is the set of k nearest neighbors, and xj is the value of the j-th neighbor [@alwateer2024missing] [@stekhoven2012missforest].
+
+#### 4.Multiple Imputation by Chained Equations (MICE)
+
+MICE is a powerful method that handles missing data by creating multiple complete versions of the dataset. Here’s how it works:
+
+It starts by filling in the missing values with simple guesses (e.g., the mean or median).
+
+Then, it uses regression models to predict the missing values based on other variables in the dataset.
+
+This process is repeated several times, and the results are combined to produce a final, more accurate dataset.
+
+In R, you can use the mice() function from the mice package to perform MICE imputation. This method is especially useful for datasets with complex patterns of missing data [@little2019statistical] White et al., 2011).
+
+
+
 -   Justify your choices based on the problem and data.
 
-*The common non-parametric regression model is*
-$Y_i = m(X_i) + \varepsilon_i$*, where* $Y_i$ *can be defined as the sum
-of the regression function value* $m(x)$ *for* $X_i$*. Here* $m(x)$ *is
-unknown and* $\varepsilon_i$ *some errors. With the help of this
-definition, we can create the estimation for local averaging i.e.*
-$m(x)$ *can be estimated with the product of* $Y_i$ *average and* $X_i$
-*is near to* $x$*. In other words, this means that we are discovering
-the line through the data points with the help of surrounding data
-points. The estimation formula is printed below [@R-base]:*
 
-$$
-M_n(x) = \sum_{i=1}^{n} W_n (X_i) Y_i  \tag{1}
-$$$W_n(x)$ *is the sum of weights that belongs to all real numbers.
-Weights are positive numbers and small if* $X_i$ *is far from* $x$*.*
 
-*Another equation:*
-
-$$
-y_i = \beta_0 + \beta_1 X_1 +\varepsilon_i
-$$
 
 ## Analysis and Results
 
 ### Data Exploration and Visualization
 
 -   Describe your data sources and collection process.
+
     (https://www.kaggle.com/c/titanic/data)
-      The Titanic dataset from Kaggle is a widely used dataset for data analysis and machine learning projects. It contains information about the passengers aboard the Titanic, including whether they survived or not. The dataset includes features such as:
+    
+  The Titanic dataset from Kaggle is a widely used dataset for data analysis and machine learning projects. It contains information about the passengers aboard the Titanic, including whether they survived or not. The dataset includes features such as:
+      
 - PassengerId: A unique identifier for each passenger.
 -	Survived: Whether the passenger survived (1) or not (0).
 -	Pclass: The ticket class (1st, 2nd, or 3rd), which is a proxy for socio-economic status.
@@ -108,14 +174,19 @@ $$
 -	Cabin: The cabin number (many missing values).
 -	Embarked: The port of embarkation (C = Cherbourg, Q = Queenstown, S = Southampton).
 
--   Present initial findings and insights through visualizations.
-
 
 ```{r}
-install.packages("ggplot2")
+# Set CRAN mirror
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+
+# Install and load ggplot2
+if (!require(ggplot2)) install.packages("ggplot2")
 library(ggplot2)
-install.packages("naniar")
+
+# Install and load naniar
+if (!require(naniar)) install.packages("naniar")
 library(naniar)
+
 
 ```
 
@@ -130,17 +201,18 @@ train <- train %>%
     Cabin = na_if(Cabin, ""),
     Embarked = na_if(Embarked, "")
   )
-head(train)
+summary(train)
 ```
 ```{r}
 #missing values column wise
 colSums(is.na(train))
 ```
-- Age column has 177 missing values 
-- cabin column has large number of missing vaklues 687
-- similarlly embarked column has 2 missing vaklues.
 
--   Highlight unexpected patterns or anomalies.
+- Age column has 177 missing values 
+- Cabin column has large number of missing values 687
+- Similarly embarked column has 2 missing values.
+
+##### Unexpected patterns or anomalies.
 
 ```{r}
 # creating a data frame to show the missing values percentage
@@ -171,10 +243,25 @@ ggplot(missing_data,aes(x=column_name,y=missing_val))+
 vis_miss(train)+
   labs(title="missingness pattern in dataset")
 ```
+
 ```{r}
+#Whether the passenger survived (1) or not (0)
+ggplot(train, aes(x = factor(Survived))) +  
+  geom_bar(fill = "steelblue") +  
+  labs(title = "Survival Count", x = "Survived", y = "Count")  
+```
+
+The plot shows that fewer passengers survived than crew members. This depiction emphasizes the survival rate imbalance in the data since it strongly affects both analytical processes and model predictions of survival estimates.
+
+```{r}
+# Age Distribution  
+ggplot(train, aes(x = Age)) +  
+  geom_histogram(binwidth = 5, fill = "gray", color = "black") +  
+  labs(title = "Age Distribution", x = "Age", y = "Count")  
 
 ```
 
+The density plot shows most passengers fell between 20 and 40 while showing their highest count at age 28 during the voyage. The passenger population shows scarcity among those younger than ten years old and older than sixty years old. The plotted distribution allows researchers to understand population statistics about the ship passengers which helps explain survival patterns based on passenger ages.
 
 
 
