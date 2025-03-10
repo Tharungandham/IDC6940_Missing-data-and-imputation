@@ -36,7 +36,7 @@ The selection of imputation methods relies on both the dataset characteristics a
 The analysis evaluates five imputation approaches based on mean, mode, regression, K-Nearest Neighbors (KNN), and Multiple Imputation by Chained Equations (MICE) through application on the well-known Titanic dataset. The research objective is to determine which of these five methods produces the best results for handling missing data in structured datasets so researchers can guarantee data reliability and improve their research findings' validity. The research findings from this analysis will expand existing knowledge about imputation methods and supply actionable tips to scientists and practitioners who need to handle missing data.
 
 
-## Literature Review
+### Literature Review
 
 Missing data is common problem in data science, which affects the accuracy and reliability of analyses across different domains. This section summarizes major findings from existing research on ‘missing data imputation’, which focus on old traditional and new advanced methods and their applications, limitations.
 
@@ -66,8 +66,6 @@ Hybrid methods, combining traditional methods and machine learning, also deliver
 *This is my work and I want to add more work...*
 
 ## Imputation Methods
-
--   Detail the models or algorithms used.
 
 #### 1.Mean and Mode Imputation
 
@@ -146,14 +144,10 @@ In R, you can use the mice() function from the mice package to perform MICE impu
 
 
 
--   Justify your choices based on the problem and data.
 
 
 
-
-## Analysis and Results
-
-### Data Exploration and Visualization
+## Data Exploration and Visualization
 
 -   Describe your data sources and collection process.
 
@@ -263,6 +257,96 @@ ggplot(train, aes(x = Age)) +
 
 The density plot shows most passengers fell between 20 and 40 while showing their highest count at age 28 during the voyage. The passenger population shows scarcity among those younger than ten years old and older than sixty years old. The plotted distribution allows researchers to understand population statistics about the ship passengers which helps explain survival patterns based on passenger ages.
 
+
+## Analysis and Results
+
+#### Mean and Mode Imputation
+
+```{r}
+# copy of the original data set
+train_imputed1<- train
+```
+
+```{r}
+# Mean imputation for Age( numeric column)
+mean_age <- mean(train_imputed1$Age, na.rm = TRUE) #(remove na while caluclating mean)
+train_imputed1 <- train_imputed1 %>%
+  mutate(Age = ifelse(is.na(Age), mean_age, Age))
+
+```
+
+```{r}
+# Mode imputation replaces missing values in categorical columns (e.g., Embarked) with the mode (most frequent value) of the column.
+
+# Mode imputation for Embarked
+mode_embarked <- names(sort(table(train_imputed1$Embarked), decreasing = TRUE))[1]
+train_imputed1 <- train_imputed1 %>%
+  mutate(Embarked = ifelse(is.na(Embarked), mode_embarked, Embarked))
+
+# Mode imputation for Cabin
+mode_cabin <- names(sort(table(train_imputed1$Cabin), decreasing = TRUE))[1]
+train_imputed1 <- train_imputed1 %>%
+  mutate(Cabin = ifelse(is.na(Cabin), mode_cabin, Cabin))
+
+
+colSums(is.na(train_imputed1))
+```
+```{r}
+#  Visualizing Age distribution after imputation
+ggplot(train_imputed1, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "gray", color = "black") +
+  labs(title = "Age Distribution After Mean Imputation", x = "Age", y = "Count")
+```
+
+##### REGRESSION IMPUTATION
+```{r}
+#linear regression for age (numerical data)
+train_regression<-train
+# Fit the linear regression model
+age_model <- lm(Age ~ Pclass + Sex + SibSp + Parch + Fare, data = train_regression)
+
+# Identify rows with missing Age
+missing_age <- is.na(train_regression$Age)
+
+# Predict missing Age values
+train_regression$Age[missing_age] <- predict(age_model, newdata = train_regression[missing_age, ])
+
+```
+
+```{r}
+
+sum(is.na(train_regression$Embarked))
+```
+
+Since Embarked column has 3 categories: "C", "Q", "S" we are using Multinomial Logistic Regression for Embarked.
+```{r}
+library(nnet)
+
+# Fit a multinomial logistic regression model for Embarked
+embarked_model <- multinom(Embarked ~ Pclass + Sex + Age + SibSp + Parch + Fare, 
+                           data = train_regression)
+missing_embarked <- is.na(train_regression$Embarked)
+
+predicted_embarked <- predict(embarked_model, newdata = train_regression[missing_embarked, ], type = "class")
+
+# Replace missing values with predicted values
+train_regression$Embarked[missing_embarked] <- predicted_embarked
+
+```
+
+- Too Many Missing Values: 687 missing values out of 891 is a lot, and regression imputation might not work well due to the lack of sufficient data.
+- The Cabin column has many unique categories (e.g., "G6", "C103", "C123", etc.), making regression imputation computationally expensive and less reliable.
+- So i am using mode imputation for this column.
+```{r}
+# Mode imputation for Cabin
+mode_reg <- names(sort(table(train_regression$Cabin), decreasing = TRUE))[1]
+train_regression <- train_regression %>%
+  mutate(Cabin = ifelse(is.na(Cabin), mode_reg, Cabin))
+
+
+colSums(is.na(train_regression))
+```
+using regression imputation techiniques i Replaced NA values .
 
 
 ### Modeling and Results
