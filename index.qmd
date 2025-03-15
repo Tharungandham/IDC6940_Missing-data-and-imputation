@@ -65,7 +65,7 @@ Hybrid methods, combining traditional methods and machine learning, also deliver
 
 *This is my work and I want to add more work...*
 
-## Imputation Methods
+## Methods
 
 #### 1.Mean and Mode Imputation
 
@@ -112,9 +112,14 @@ $$
 where x^i is the predicted value, β0,β1,…,βp are the regression coefficients, and ϵi is the error term [@yadav2024computational]; [@little2019statistical].
 
 #### 3.K-Nearest Neighbors (KNN) Imputation
-   KNN imputation allows advanced replacement of missing values through an analysis of similar data points (neighbors) in the dataset. Here’s how it works:
+   K-Nearest Neighbors (KNN) is a machine learning algorithm used for both classification and regression tasks. In the context of missing data imputation:
 
-The KNN algorithm locates k data points with similar features as each missing value to make its imputation decision.
+KNN finds the K most similar rows (neighbors) in the dataset based on the values of other features.
+
+It then uses the values from these neighbors to estimate the missing values.
+For each row with a missing value, KNN looks at the other features (columns) in the dataset.It calculates the distance (e.g., Euclidean distance) between the row with the missing value and all other rows.
+
+It selects the K nearest neighbors (rows) that are most similar based on the distance.
 
 The algorithm obtains the average measurement point for numerical data and most frequent value for categorical data from the k nearest neighbors.
 
@@ -124,27 +129,37 @@ KNN Formula:
 The KNN imputation formula is:
 
 $$
-\hat{x}_i = \frac{1}{k} \sum_{j \in N_k(i)} x_j \label{eq:knn}
+\hat{x}_i = \frac{1}{k} \sum_{j \in N_k(i)} x_j \label{eq:knn} 
 $$
+k  Specifies the number of nearest neighbors to use.
 
 As shown in Equation , KNN imputation replaces missing values with the average of the nearest neighbors.
 where x^i is the imputed value, Nk(i) is the set of k nearest neighbors, and xj is the value of the j-th neighbor [@alwateer2024missing] [@stekhoven2012missforest].
 
 #### 4.Multiple Imputation by Chained Equations (MICE)
+MICE serves as a popular method for missing data management through its creation of numerous complete versions of original datasets. MICE proves effective in dealing with complex missing data patterns provided data follow the MAR assumption. The following description of MICE features a detailed analysis supported by references from Pedersen et al. (2017). 
 
-MICE is a powerful method that handles missing data by creating multiple complete versions of the dataset. Here’s how it works:
+How MICE Works
 
-It starts by filling in the missing values with simple guesses (e.g., the mean or median).
+- Initialization:
 
-Then, it uses regression models to predict the missing values based on other variables in the dataset.
+MICE starts by filling in the missing values with initial guesses (e.g., mean, median, or random values). These are temporary placeholders and will be refined in subsequent steps (Pedersen et al., 2017).
 
-This process is repeated several times, and the results are combined to produce a final, more accurate dataset.
+- Iterative Imputation:
 
-In R, you can use the mice() function from the mice package to perform MICE imputation. This method is especially useful for datasets with complex patterns of missing data [@little2019statistical] White et al., 2011).
+Each variable with missing data within MICE undergoes regression model analysis to generate predicted values by using other dataset variables. A model selection depends on the variable type for regression analysis.
+Linear regression for numeric variables.
+Logistic regression for binary categorical variables.
+Multinomial regression for multi-class categorical variables (Pedersen et al., 2017).
+The imputation process runs repeatedly while updating missing value predictions during each cycle until prediction changes reach an unnoticeable point.
 
+- Multiple Imputed Datasets:
 
+The MICE method creates five to ten datasets which represent diverse plausible alternatives for missing data values. The method represents the unknown nature of missing data values (Pedersen et al., 2017).
 
+- Combining Results:
 
+Each data set created through MICE receives separate analysis for the study interest such as logistic regression. Combines the results from these datasets to provide unbiased and valid estimates of associations according to Pedersen et al. (2017).
 
 
 ## Data Exploration and Visualization
@@ -238,6 +253,7 @@ vis_miss(train)+
   labs(title="missingness pattern in dataset")
 ```
 
+
 ```{r}
 #Whether the passenger survived (1) or not (0)
 ggplot(train, aes(x = factor(Survived))) +  
@@ -245,7 +261,34 @@ ggplot(train, aes(x = factor(Survived))) +
   labs(title = "Survival Count", x = "Survived", y = "Count")  
 ```
 
-The plot shows that fewer passengers survived than crew members. This depiction emphasizes the survival rate imbalance in the data since it strongly affects both analytical processes and model predictions of survival estimates.
+
+The plot shows that fewer passengers survived . This depiction emphasizes the survival rate imbalance in the data since it strongly affects both analytical processes and model predictions of survival estimates.
+
+```{r}
+ggplot(train, aes(x = Sex, fill = factor(Survived))) +
+  geom_bar(position = "fill") +
+  labs(title = "Survival Rate by Gender", x = "Gender", y = "Proportion", fill = "Survived")
+```
+
+- we can say that more female passengers are survived than male passengers.
+
+```{r}
+ggplot(train, aes(x = factor(Pclass), fill = factor(Survived))) +
+  geom_bar(position = "fill") +
+  labs(title = "Survival Rate by Passenger Class", x = "Class", y = "Proportion", fill = "Survived")
+```
+
+```{r}
+ggplot(train, aes(x = factor(Survived), y = Age, fill = factor(Survived))) +
+  geom_boxplot() +
+  labs(title = "Age Distribution by Survival", x = "Survived", y = "Age", fill = "Survived")
+```
+
+- We can see that most survivors are in the 20–40 age range, so missing ages for survivors might be imputed with a value in that range.
+- Median Age: The median age of survivors (blue box) is slightly higher than that of non-survivors (red box).
+- Age Spread: Both groups have a similar spread of ages, meaning age alone may not be a strong factor in survival.
+
+
 
 ```{r}
 # Age Distribution  
@@ -255,8 +298,31 @@ ggplot(train, aes(x = Age)) +
 
 ```
 
-The density plot shows most passengers fell between 20 and 40 while showing their highest count at age 28 during the voyage. The passenger population shows scarcity among those younger than ten years old and older than sixty years old. The plotted distribution allows researchers to understand population statistics about the ship passengers which helps explain survival patterns based on passenger ages.
+The histogram displays the distribution of passenger ages. The majority of passengers fall within the 20–40 age range, with a peak around the early twenties. A smaller number of passengers are younger children or older adults, with very few above 60. The distribution is right-skewed, indicating more younger passengers compared to older ones. This visualization helps understand the overall age demographics and can guide imputation strategies for missing age values.
 
+
+```{r}
+library(reshape2)
+
+# Select numeric columns
+numeric_data <- train %>%
+  select(Age, Fare, SibSp, Parch, Survived)
+
+# Compute correlation matrix
+cor_matrix <- cor(numeric_data, use = "complete.obs")
+
+# Melt the correlation matrix for ggplot
+melted_cor_matrix <- melt(cor_matrix)
+
+# Plot heatmap
+ggplot(melted_cor_matrix, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) +
+  labs(title = "Correlation Heatmap", x = "", y = "", fill = "Correlation") +
+  theme_bw()
+```
+
+This correlation heatmap provides insights into relationships between key numerical variables in our dataset. Darker red indicates a strong positive correlation, while purple represents a negative correlation. For example, 'Fare' and 'Survived' show a positive correlation, suggesting passengers who paid higher fares had a higher survival rate. Identifying these relationships helps in understanding data patterns, which is crucial when handling missing values, as correlations can guide imputation strategies.
 
 ## Analysis and Results
 
@@ -296,6 +362,11 @@ colSums(is.na(train_imputed1))
 ggplot(train_imputed1, aes(x = Age)) +
   geom_histogram(binwidth = 5, fill = "gray", color = "black") +
   labs(title = "Age Distribution After Mean Imputation", x = "Age", y = "Count")
+```
+```{r}
+ggplot(train_imputed1, aes(x = factor(Survived), y = Age, fill = factor(Survived))) +
+  geom_boxplot() +
+  labs(title = "Age Distribution by Survival", x = "Survived", y = "Age", fill = "Survived")
 ```
 
 ##### REGRESSION IMPUTATION
@@ -347,6 +418,20 @@ train_regression <- train_regression %>%
 colSums(is.na(train_regression))
 ```
 using regression imputation techiniques i Replaced NA values .
+
+##### KNN IMPUTATION
+
+```{r}
+
+# Load the VIM package
+library(VIM)
+
+# Perform KNN imputation
+train_knn <- kNN(train, k = 5)
+
+# Check missing values after imputation
+colSums(is.na(train_knn))
+```
 
 
 ### Modeling and Results
