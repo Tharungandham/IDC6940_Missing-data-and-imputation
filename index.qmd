@@ -161,6 +161,7 @@ The MICE method creates five to ten datasets which represent diverse plausible a
 
 Each data set created through MICE receives separate analysis for the study interest such as logistic regression. Combines the results from these datasets to provide unbiased and valid estimates of associations according to Pedersen et al. (2017).
 
+- For now we are proceeding with mean/mode , regression and knn imputations.
 
 ## Data Exploration and Visualization
 
@@ -246,6 +247,7 @@ ggplot(missing_data,aes(x=column_name,y=missing_val))+
   theme_bw()
 
 ```
+- each column and their missingness compared in bar chart, cabin column has highest number of missing values.
 
 ```{r}
 
@@ -429,28 +431,205 @@ library(VIM)
 # Perform KNN imputation
 train_knn <- kNN(train, k = 5)
 
+
 # Check missing values after imputation
 colSums(is.na(train_knn))
 ```
 
 
 ### Modeling and Results
-
--   Explain your data preprocessing and cleaning steps.
-
--   Present your key findings in a clear and concise manner.
-
--   Use visuals to support your claims.
-
--   **Tell a story about what the data reveals.**
+####Comparing Age distributions
 
 ```{r}
 
+library(ggplot2)
+
+
+ggplot(train, aes(Age)) + 
+  geom_histogram(fill="red", alpha=0.5, bins=30) + 
+  ggtitle("Original Age Distribution") +
+  theme_minimal()
+
+ggplot(train_imputed1, aes(Age)) + 
+  geom_histogram(fill="blue", alpha=0.5, bins=30) + 
+  ggtitle("Age Distribution after Mean Imputation") +
+  theme_minimal()
+
+ggplot(train_regression, aes(Age)) + 
+  geom_histogram(fill="green", alpha=0.5, bins=30) + 
+  ggtitle("Age Distribution after Regression Imputation") +
+  theme_minimal()
+
+ggplot(train_knn,aes(Age)) +
+  geom_histogram(fill="gold",alpha=0.5, bins=30)+
+  ggtitle("Age Distribution after knn Imputation") +
+  theme_minimal()
 ```
+#### Model Performance
+```{r}
+
+model_1 <- Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked
+
+# Train models on different imputed datasets
+logit_mean <- glm(model_1, data = train_imputed1, family = "binomial")
+logit_reg <- glm(model_1, data = train_regression, family = "binomial")
+logit_knn <- glm(model_1, data = train_knn, family = "binomial")
+
+```
+
+```{r}
+install.packages("caret", dependencies = TRUE)
+library(caret)
+
+```
+```{r}
+# Convert Survived column to factor (Required for confusionMatrix)
+train_imputed1$Survived <- as.factor(train_imputed1$Survived)
+train_regression$Survived <- as.factor(train_regression$Survived)
+train_knn$Survived <- as.factor(train_knn$Survived)
+
+# Get predictions (Convert probabilities to binary predictions: 1 if >0.5 else 0)
+pred_mean <- ifelse(predict(logit_mean, type = "response") > 0.5, 1, 0)
+pred_reg <- ifelse(predict(logit_reg, type = "response") > 0.5, 1, 0)
+pred_knn <- ifelse(predict(logit_knn, type = "response") > 0.5, 1, 0)
+
+# Convert predictions and actual values to factors for confusionMatrix()
+pred_mean <- as.factor(pred_mean)
+pred_reg <- as.factor(pred_reg)
+pred_knn <- as.factor(pred_knn)
+
+# Compute confusion matrices
+conf_matrix_mean <- confusionMatrix(pred_mean, train_imputed1$Survived)
+conf_matrix_reg <- confusionMatrix(pred_reg, train_regression$Survived)
+conf_matrix_knn <- confusionMatrix(pred_knn, train_knn$Survived)
+
+# Print accuracy for each model
+cat("Accuracy with Mean/Mode Imputation:", conf_matrix_mean$overall['Accuracy'], "\n")
+cat("Accuracy with Regression Imputation:", conf_matrix_reg$overall['Accuracy'], "\n")
+cat("Accuracy with KNN Imputation:", conf_matrix_knn$overall['Accuracy'], "\n")
+
+```
+
+- Results show that KNN imputation performed the best in terms of accuracy, followed by regression imputation, and then mean/mode imputation.
+
+#### Model metrics
+
+```{r}
+metrics <- function(conf_matrix) {
+  data.frame(
+    Accuracy = conf_matrix$overall['Accuracy'],
+    Sensitivity = conf_matrix$byClass['Sensitivity'],
+    Specificity = conf_matrix$byClass['Specificity'],
+    F1_Score = conf_matrix$byClass['F1']
+  )
+}
+
+# Create comparison table
+rbind(
+  Mean = metrics(conf_matrix_mean),
+  Regression = metrics(conf_matrix_reg),
+  KNN = metrics(conf_matrix_knn)
+)
+```
+
+
+```{r}
+library(ggplot2)
+library(tidyr)
+
+# Prepare data
+results <- data.frame(
+  Method = c("Mean/Mode", "Regression", "KNN"),
+  Accuracy = c(0.801, 0.808, 0.810),
+  F1_Score = c(conf_matrix_mean$byClass['F1'], 
+               conf_matrix_reg$byClass['F1'],
+               conf_matrix_knn$byClass['F1'])
+) %>% pivot_longer(-Method, names_to = "Metric")
+
+# Plot
+ggplot(results, aes(Method, value, fill = Metric)) +
+  geom_col(position = "dodge") +
+  labs(title = "Model Performance Comparison", 
+       y = "Score", x = "Imputation Method") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_minimal()
+```
+
+-This bar graph compares the effectiveness of three missing data imputation methods—Mean/Mode, Regression, and KNN—on machine learning model performance. The Y-axis represents the performance scores (ranging from 0.0 to 0.8), while the X-axis lists the imputation methods. Each method is evaluated using two key metrics:
+
+-Accuracy: Measures overall prediction correctness.
+
+-F1-Score: Balances precision and recall (critical for imbalanced datasets).
+
+KNN Imputation Achieves the Best Performance:
+
+- Highest accuracy (0.810) and F1-score (0.850), indicating it best preserves data patterns when filling missing values.
+
+Regression Slightly Trails KNN:
+
+- Close second in accuracy (0.808) and F1-score (0.848), leveraging statistical relationships for reliable imputation.
+
+Mean/Mode Lags Behind:
+
+- Lowest scores (accuracy: 0.801; F1-score: 0.842), as simple averages fail to capture nuanced data structures.
+
+
+
+```{r}
+library(dplyr)  
+library(broom)  
+library(ggplot2)
+
+# Get coefficients from each model
+coef_mean <- tidy(logit_mean) %>% mutate(Method = "Mean/Mode")
+coef_reg <- tidy(logit_reg) %>% mutate(Method = "Regression") 
+coef_knn <- tidy(logit_knn) %>% mutate(Method = "KNN")
+
+# Combine all coefficients
+coefs <- rbind(coef_mean, coef_reg, coef_knn)
+
+# Plot (simple version)
+ggplot(coefs %>% filter(term != "(Intercept)"), 
+       aes(x = term, y = estimate, color = Method)) +
+  geom_point(size = 3) +
+  coord_flip() +
+  labs(title = "Columns Importance Across Models",
+       x = "columns",
+       y = "Coefficient Value") +
+  theme_minimal()
+```
+
+Y-axis : Lists the features (variables) like SibSp, Sexmale, Pclass, etc.
+
+X-axis : Shows the coefficient values or importance scores of each feature.
+
+ This plot compares how different features influence our model’s predictions and whether their importance changes based on how we handle missing data. For example:
+
+- Sexmale is strongly negative across all methods, confirming that being male significantly lowered survival odds.
+
+- Negative values (left side): The feature has a negative relationship with the target (e.g., higher Pclass = lower survival) i.e Pclass (ticket class) also has a negative effect—higher classes (1st = rich, 3rd = poor) had worse survival rates.
+
+
+- Positive values (right side): The feature has a positive relationship (e.g., higher Fare = higher survival).Fare shows a positive relationship, suggesting wealthier passengers had better survival chances.
+
+- Features like Embarked (port of boarding) matter less, as their bars are short.
+
+- The importance of Age varies slightly depending on how we fill missing values, but it’s not a dominant factor.
+
 
 ### Conclusion
 
--   Summarize your key findings.
+-   To handle missing values, we applied three different imputation techniques—Mean/Mode Imputation, Regression Imputation, and KNN Imputation. After imputing the missing values, we trained a logistic regression model to predict survival and compared the accuracy of each imputation method.
+
+- Mean/Mode Imputation resulted in an accuracy of 80.13%, as it fills missing values with the column’s mean (for numeric data) or the most frequent category (for categorical data). While simple and efficient, it may not capture complex relationships within the data.
+
+- Regression Imputation improved accuracy to 80.81%, as it predicts missing values based on other variables using linear or multinomial regression. This method provides better estimations than simple mean/mode imputation.
+
+- KNN Imputation achieved the highest accuracy at 81.03%, as it fills missing values based on the nearest neighbors' values, preserving data patterns more effectively.
+
+Overall, KNN imputation performed the best, followed by regression, and then mean/mode. This suggests that more sophisticated imputation techniques can lead to better predictive performance.
+
+
 
 -   Discuss the implications of your results.
 
