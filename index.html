@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Tharun Teja Gandham &amp; Mourya Rai Papolu (Advisor: Dr. Cohen)">
-<meta name="dcterms.date" content="2025-03-31">
+<meta name="dcterms.date" content="2025-04-05">
 
 <title>Missing Data and Imputation</title>
 <style>
@@ -3267,7 +3267,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">March 31, 2025</p>
+      <p class="date">April 5, 2025</p>
     </div>
   </div>
   
@@ -3308,7 +3308,6 @@ window.Quarto = {
 <li>Semi-Parametric and Hybrid Approaches:</li>
 </ol>
 <p>The hybrid approach is increasingly and becoming popular with researchers Just see the number of references to it on Google Scholar this year Outperforming fully parametric approaches in social science research, semi-parametric methods such as predictive mean matching and hot deck imputation show great potential for item-nonresponse data <span class="citation" data-cites="durrant2005imputation">(<a href="#ref-durrant2005imputation" role="doc-biblioref">Durrant et al. 2005</a>)</span>. Hybrid methods, combining traditional methods and machine learning, also deliver satisfactory results in increasing imputation accuracies without increasing computational time at all <span class="citation" data-cites="afkanpour2024identify">(<a href="#ref-afkanpour2024identify" role="doc-biblioref">Afkanpour, Hosseinzadeh, and Tabesh 2024</a>)</span>.It is noted by <span class="citation" data-cites="lee2024prevention">(<a href="#ref-lee2024prevention" role="doc-biblioref">Lee and Raghunathan 2024</a>)</span> that in clinical research settings, hybrid ones may well operate. Whether because a better preventive device with more sophisticated analytics yields even worse data quality than ever before; or due to some other double-combining of tools and methods, weightless chances must not be missed out on because of their particular novelty <span class="citation" data-cites="farhangfar2007novel">(<a href="#ref-farhangfar2007novel" role="doc-biblioref">Farhangfar, Kurgan, and Pedrycz 2007</a>)</span>.</p>
-<p><em>This is my work and I want to add more work…</em></p>
 </section>
 </section>
 <section id="methods" class="level2">
@@ -3573,7 +3572,7 @@ Embarked       Embarked           2       0.2244669</code></pre>
 </div>
 </div>
 <ul>
-<li>we can say that more female passengers are survived than male passengers.</li>
+<li>we can see that more female passengers are survived than male passengers from total number of passengers.</li>
 </ul>
 <div class="cell">
 <details class="code-fold">
@@ -3590,6 +3589,7 @@ Embarked       Embarked           2       0.2244669</code></pre>
 </div>
 </div>
 </div>
+<p>The stacked bar chart illustrates the survival rate of passengers by class on the Titanic. First-class passengers had the highest proportion of survivors, followed by second class, while third-class passengers had the lowest survival rate. Notably, the majority of third-class passengers did not survive, highlighting the disparity in survival chances based on socioeconomic status. This suggests that higher-class passengers likely had better access to lifeboats or evacuation assistance. The visualization underscores how passenger class played a significant role in determining survival during the disaster.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -3608,7 +3608,7 @@ Embarked       Embarked           2       0.2244669</code></pre>
 <ul>
 <li>We can see that most survivors are in the 20–40 age range, so missing ages for survivors might be imputed with a value in that range.</li>
 <li>Median Age: The median age of survivors (blue box) is slightly higher than that of non-survivors (red box).</li>
-<li>Age Spread: Both groups have a similar spread of ages, meaning age alone may not be a strong factor in survival.</li>
+<li>Age Spread: Both groups have a similar spread of ages, meaning age alone may not be a strong factor in survival. -Most survivors (blue) and non-survivors (red) fall within 20–40 years, with survivors having a marginally higher median age. The overlapping IQRs indicate age’s limited predictive power unless combined with other features (e.g., class or gender).”</li>
 </ul>
 <div class="cell">
 <details class="code-fold">
@@ -3658,6 +3658,16 @@ Embarked       Embarked           2       0.2244669</code></pre>
 </div>
 </div>
 <p>This correlation heatmap provides insights into relationships between key numerical variables in our dataset. Darker red indicates a strong positive correlation, while purple represents a negative correlation. For example, ‘Fare’ and ‘Survived’ show a positive correlation, suggesting passengers who paid higher fares had a higher survival rate. Identifying these relationships helps in understanding data patterns, which is crucial when handling missing values, as correlations can guide imputation strategies.</p>
+<p>The Pearson correlation coefficient (<span class="math inline">\(r\)</span>) measures the linear relationship between two variables, ranging from <span class="math inline">\(-1\)</span> to <span class="math inline">\(+1\)</span>. It is computed as:<br>
+<span class="math display">\[
+\begin{align}
+r &amp;= \frac{n(\sum XY) - (\sum X)(\sum Y)}{\sqrt{[n \sum X^2 - (\sum X)^2][n \sum Y^2 - (\sum Y)^2]}} \\
+\text{where} \quad n &amp;= \text{number of observations}, \\
+X, Y &amp;= \text{paired variables}, \\
+\sum XY &amp;= \text{sum of cross-products}, \\
+\sum X, \sum Y &amp;= \text{sums of individual variables}.
+\end{align}
+\]</span></p>
 </section>
 </section>
 <section id="analysis-and-results" class="level2">
@@ -3721,6 +3731,7 @@ Embarked       Embarked           2       0.2244669</code></pre>
 </div>
 </div>
 </div>
+<p>The histogram now shows a sharp peak around age 28–30, with counts nearing 300, due to mean/mode imputation. The previously dominant 20–40 age range has reduced counts (100–150), as missing values were replaced by the central tendency. This creates an artificial cluster, reducing natural age variability. The change highlights how imputation can distort distributions, potentially affecting analysis.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -3736,6 +3747,11 @@ Embarked       Embarked           2       0.2244669</code></pre>
 </div>
 </div>
 </div>
+<ul>
+<li><p>After imputation, ages cluster sharply around 28–30, losing the original spread (20–40 years).</p></li>
+<li><p>This artificial spike may distort survival predictions, overemphasizing the imputed age.</p></li>
+<li><p>Results could be biased.</p></li>
+</ul>
 <section id="regression-imputation-1" class="level5">
 <h5 class="anchored" data-anchor-id="regression-imputation-1">REGRESSION IMPUTATION</h5>
 <div class="cell">
@@ -3847,7 +3863,8 @@ converged</code></pre>
 </section>
 <section id="modeling-and-results" class="level3">
 <h3 class="anchored" data-anchor-id="modeling-and-results">Modeling and Results</h3>
-<p>####Comparing Age distributions</p>
+<section id="comparing-age-distributions" class="level4">
+<h4 class="anchored" data-anchor-id="comparing-age-distributions">Comparing Age distributions</h4>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -3909,8 +3926,14 @@ converged</code></pre>
 </div>
 </div>
 </div>
-<section id="model-performance" class="level4">
-<h4 class="anchored" data-anchor-id="model-performance">Model Performance</h4>
+<ul>
+<li><p>Original Data shows a natural spread of passenger ages (mostly 20-40 years).</p></li>
+<li><p>Mean Imputation creates an unrealistic spike at one age (28-30), making the data look artificial.</p></li>
+<li><p>Regression and KNN Imputation preserve the original pattern better - ages remain spread out like real data.</p></li>
+</ul>
+<p>What This Means: Mean imputation distorts the data by forcing all missing ages to be similar, while regression and KNN methods keep the natural variation we see in the original dataset. For accurate analysis, regression or KNN work better than simple mean replacement.</p>
+<section id="model-performance" class="level5">
+<h5 class="anchored" data-anchor-id="model-performance">Model Performance</h5>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -3977,8 +4000,8 @@ converged</code></pre>
 <li>Results show that KNN imputation performed the best in terms of accuracy, followed by regression imputation, and then mean/mode imputation.</li>
 </ul>
 </section>
-<section id="model-metrics" class="level4">
-<h4 class="anchored" data-anchor-id="model-metrics">Model metrics</h4>
+<section id="model-metrics" class="level5">
+<h5 class="anchored" data-anchor-id="model-metrics">Model metrics</h5>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -4036,21 +4059,11 @@ KNN        0.8103255   0.8724954   0.7105263 0.8500444</code></pre>
 </div>
 </div>
 </div>
-<p>-This bar graph compares the effectiveness of three missing data imputation methods—Mean/Mode, Regression, and KNN—on machine learning model performance. The Y-axis represents the performance scores (ranging from 0.0 to 0.8), while the X-axis lists the imputation methods. Each method is evaluated using two key metrics:</p>
-<p>-Accuracy: Measures overall prediction correctness.</p>
-<p>-F1-Score: Balances precision and recall (critical for imbalanced datasets).</p>
-<p>KNN Imputation Achieves the Best Performance:</p>
-<ul>
-<li>Highest accuracy (0.810) and F1-score (0.850), indicating it best preserves data patterns when filling missing values.</li>
-</ul>
-<p>Regression Slightly Trails KNN:</p>
-<ul>
-<li>Close second in accuracy (0.808) and F1-score (0.848), leveraging statistical relationships for reliable imputation.</li>
-</ul>
-<p>Mean/Mode Lags Behind:</p>
-<ul>
-<li>Lowest scores (accuracy: 0.801; F1-score: 0.842), as simple averages fail to capture nuanced data structures.</li>
-</ul>
+<p>This comparison shows how different methods for handling missing data affect our model’s predictions:</p>
+<p>KNN imputation works best (0.81 accuracy), preserving complex patterns in the data.</p>
+<p>Regression comes close (0.808 accuracy), using statistical relationships to fill gaps.</p>
+<p>Simple mean/mode replacement performs worst (0.801 accuracy), as averages can’t capture real-world variability.</p>
+<p>The F1-scores (0.85 for KNN) confirm this ranking, especially important since our survival data is imbalanced.”</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -4084,30 +4097,52 @@ KNN        0.8103255   0.8724954   0.7105263 0.8500444</code></pre>
 </div>
 </div>
 </div>
-<p>Y-axis : Lists the features (variables) like SibSp, Sexmale, Pclass, etc.</p>
-<p>X-axis : Shows the coefficient values or importance scores of each feature.</p>
-<p>This plot compares how different features influence our model’s predictions and whether their importance changes based on how we handle missing data. For example:</p>
 <ul>
-<li><p>Sexmale is strongly negative across all methods, confirming that being male significantly lowered survival odds.</p></li>
-<li><p>Negative values (left side): The feature has a negative relationship with the target (e.g., higher Pclass = lower survival) i.e Pclass (ticket class) also has a negative effect—higher classes (1st = rich, 3rd = poor) had worse survival rates.</p></li>
-<li><p>Positive values (right side): The feature has a positive relationship (e.g., higher Fare = higher survival).Fare shows a positive relationship, suggesting wealthier passengers had better survival chances.</p></li>
-<li><p>Features like Embarked (port of boarding) matter less, as their bars are short.</p></li>
-<li><p>The importance of Age varies slightly depending on how we fill missing values, but it’s not a dominant factor.</p></li>
+<li><p>Gender Dominance: “Sexmale” shows the strongest negative impact (-8 to -10 coefficient), confirming males had significantly lower survival rates regardless of imputation method.</p></li>
+<li><p>Class &amp; Wealth Matter: Pclass (negative) and Fare (positive) reveal poorer passengers (3rd class) fared worse, while wealthier ones (higher fares) survived more—consistent across all methods.</p></li>
+<li><p>Age’s Role: Age hovers near zero, implying it had limited influence compared to gender/class, though KNN slightly increased its importance (closer to +1).</p></li>
+<li><p>Port Irrelevance: Embarked features (C/Q/S) show near-zero coefficients, proving boarding location had minimal survival impact—a useful insight for model simplification.</p></li>
 </ul>
+<p>This confirms gender and wealth were primary survival drivers, while age/boarding port were secondary—critical for interpreting Titanic survival patterns accurately.</p>
+</section>
 </section>
 </section>
 <section id="conclusion" class="level3">
 <h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
-<ul>
-<li><p>To handle missing values, we applied three different imputation techniques—Mean/Mode Imputation, Regression Imputation, and KNN Imputation. After imputing the missing values, we trained a logistic regression model to predict survival and compared the accuracy of each imputation method.</p></li>
-<li><p>Mean/Mode Imputation resulted in an accuracy of 80.13%, as it fills missing values with the column’s mean (for numeric data) or the most frequent category (for categorical data). While simple and efficient, it may not capture complex relationships within the data.</p></li>
-<li><p>Regression Imputation improved accuracy to 80.81%, as it predicts missing values based on other variables using linear or multinomial regression. This method provides better estimations than simple mean/mode imputation.</p></li>
-<li><p>KNN Imputation achieved the highest accuracy at 81.03%, as it fills missing values based on the nearest neighbors’ values, preserving data patterns more effectively.</p></li>
-</ul>
-<p>Overall, KNN imputation performed the best, followed by regression, and then mean/mode. This suggests that more sophisticated imputation techniques can lead to better predictive performance.</p>
-<ul>
-<li>Discuss the implications of your results.</li>
-</ul>
+<p>Objective Achieved: Successfully compared three imputation methods (Mean/Mode, Regression, KNN) for handling missing data in the Titanic dataset.</p>
+<section id="best-imputation-method" class="level5">
+<h5 class="anchored" data-anchor-id="best-imputation-method">Best Imputation Method:</h5>
+<p>KNN Imputation achieved the highest accuracy (81.0%) by intelligently filling missing values based on similar passengers.</p>
+<p>Regression Imputation was a close second (80.8%), using statistical relationships.</p>
+<p>Mean/Mode performed worst (80.1%), as it oversimplified the data.</p>
+</section>
+<section id="top-survival-influencers" class="level5">
+<h5 class="anchored" data-anchor-id="top-survival-influencers">Top Survival Influencers:</h5>
+<p>Gender (Sex_male) was the strongest predictor—being male drastically reduced survival chances.</p>
+<p>Wealth (Fare and Pclass):</p>
+<p>Higher fares improved survival.</p>
+<p>Lower-class passengers (3rd class) had significantly worse outcomes.</p>
+<p>Age had minor impact, while boarding port (Embarked) mattered very little.</p>
+</section>
+<section id="implications" class="level4">
+<h4 class="anchored" data-anchor-id="implications">Implications</h4>
+<p>For Data Quality:</p>
+<p>Use KNN/Regression for accurate models—they preserve real patterns. Avoid mean imputation for critical tasks.</p>
+<p>For Predictive Modeling:</p>
+<p>Focus on gender, class, and fare—they drive survival predictions. Ignore weak factors (e.g., Embarked) to simplify models.</p>
+<p>For Fairness:</p>
+<p>Mean imputation’s distortion of age/class relationships could hide socioeconomic biases. Advanced methods (KNN) mitigate this.</p>
+</section>
+<section id="limitations" class="level4">
+<h4 class="anchored" data-anchor-id="limitations">Limitations</h4>
+<p>Computational Cost: KNN is slower than regression/mean—may not suit huge datasets.</p>
+<p>Assumptions: Regression assumes linear relationships; KNN assumes similar neighbors exist.</p>
+<p>Generalizability: Results are specific to the Titanic dataset. Test on other datasets to confirm trends.</p>
+</section>
+<section id="final-recommendation" class="level4">
+<h4 class="anchored" data-anchor-id="final-recommendation">Final Recommendation</h4>
+<p>“For reliable predictions, use KNN imputation and prioritize gender/class/wealth features. Mean imputation is only for quick drafts. Always check how missing data handling affects your model’s fairness and accuracy.”</p>
+</section>
 </section>
 </section>
 <section id="references" class="level2 unnumbered">
