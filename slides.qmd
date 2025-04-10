@@ -1,12 +1,25 @@
 ---
-title: "Present a great story for data science projects"
-subtitle: "This is a Slide Template"
-author: "Students names (Advisor: Dr. Cohen)"
+title: "Missing Data and Imputation Methods"
+subtitle: "This is a Data science Project"
+author: "Tharun Teja Gandham & Mourya Rai Papolu (Advisor: Dr. Cohen)"
 date: '`r Sys.Date()`'
 format:
-  revealjs
+  revealjs:
+    theme: league
+    transition: slide
+    center: true
+    scrollable: true
+    slide-number: true
+    navigation-mode: linear
+    touch: true
+    hash: true
+    controls: true
+    progress: true
+    width: 1200
+    height: 700
+  
 course: Capstone Projects in Data Science
-bibliography: references.bib # file contains bibtex for references
+#bibliography: references.bib # file contains bibtex for references
 #always_allow_html: true # this allows to get PDF with HTML features
 self-contained: true
 execute: 
@@ -29,89 +42,711 @@ More information about `revealjs`:
 <https://quarto.org/docs/reference/formats/presentations/revealjs.html>
 :::
 
-## Introduction  {.smaller}
+## Introduction {.smaller}
 
--   Develop a storyline that captures attention and maintains interest.
+### The Problem of Missing Data
+- Missing data is a pervasive issue in modern research.
+- Common in fields like **healthcare**, **finance**, and **social sciences**.
+- Causes include:
+  - Survey non-responses
+  - Data entry errors
+  - Equipment or system failures
+  - Irrelevant or uncollected data in context (e.g., EHR)
+- Inaccurate handling results in:
+  - **Biased statistical results**
+  - **Loss of statistical power**
+  - **Increased uncertainty**
 
--   Your audience is your peers
+## The Impact and Technical Relevance {.smaller}
+- In healthcare, incorrect imputation affects **diagnostic accuracy** and **patient outcomes**.
+- **Electronic Health Records (EHRs)** are highly prone to missing data.
+- Types of Missingness:
+  - **MCAR**: Missing Completely At Random
+  - **MAR**: Missing At Random (dependent on observed data)
+  - **MNAR**: Missing Not At Random (dependent on unobserved data)
+- Different missingness mechanisms demand different imputation techniques [@lee2024prevention].
 
--   Clearly state the problem or question you're addressing.
+## Project Focus and Goal {.smaller}
+- This project analyzes multiple imputation techniques on the **Titanic dataset**.
+- Techniques compared:
+  - **Mean/Mode Imputation**
+  - **Regression Imputation**
+  - **K-Nearest Neighbors (KNN)**
+- Key Evaluation Metrics:
+  - **Predictive accuracy**
+  - **Preservation of data structure**
+  - **Bias reduction and interpretability**
 
--   Introduce why it is relevant needs.
+## Literature Review {.smaller}
 
--   Provide an overview of your approach.
+### Missing Data Theory and Context
+- Foundational theories identify three types of missingness [@salgado2016missing]:
+  - **MCAR**, **MAR**, and **MNAR**
+- Each missingness type influences how data should be handled.
+- MAR is most prevalent in clinical settings where missingness relates to observed characteristics (e.g., age, gender).
 
-In kernel estimator, weight function is known as kernel function
-[@efr2008]. Cite this paper [@bro2014principal]. The GEE [@wang2014].
-The PCA [@daffertshofer2004pca]\*
+### Traditional Imputation Approaches
+- **Mean substitution** and **mode imputation** are simple but reduce variability.
+- **Listwise deletion** removes incomplete records, decreasing statistical power.
+- These techniques are quick but suitable only when missing data is MCAR or minimal [@alwateer2024missing; @yadav2024computational].
 
-## Methods
+## Advanced Imputation Techniques {.smaller}
+- **Multiple Imputation by Chained Equations (MICE):**
+  - Creates multiple datasets with different estimates, then combines results.
+  - Popular in medical and epidemiological studies [@pedersen2017missing; @little2019statistical].
+- **MissForest:**
+  - Non-parametric, uses Random Forests for mixed data types.
+  - Performs well under MCAR, MAR, and even MNAR [@stekhoven2012missforest].
+- **KNN Imputation:**
+  - Estimates missing values using the average of similar records.
+  - Good for nonlinear, local relationships.
+  
+## Applications and Challenges {.smaller}
+- Choosing the right imputation method is critical for ensuring research validity, especially in structured datasets like clinical or survey data.
+- **Applications**:
+  - Clinical decision-making based on patient EHRs
+  - Financial modeling with incomplete transaction logs
+  - Social science surveys with partial responses
+- **Challenges**:
+  - High-dimensional data increases computational cost
+  - Difficult to assess accuracy without knowing true values
+  - Not all models generalize well across datasets [@afkanpour2024identify; @alwateer2024missing; @sterne2009multiple]
 
--   Detail the models or algorithms used.
 
--   Justify your choices based on the problem and data.
+## Modern Insights & Hybrid Approaches {.smaller}
+- **Hybrid techniques** mix traditional and machine learning methods.
+- **Semi-parametric models** like hot-deck and predictive mean matching are popular in survey and social science domains [@durrant2005imputation].
+- Deep learning and hybrid frameworks outperform traditional models for complex datasets with high missingness [@afkanpour2024identify; @karim2024imputation].
 
+## Methods {.smaller}
 
+<details>
+<summary><strong>1. Mean and Mode Imputation</strong></summary>
 
-## Data Exploration and Visualization
+- **Mean Imputation:** Replaces missing numerical values with the mean of the observed values.
+- **Mode Imputation:** Replaces missing categorical values with the most frequent category.
+- **Advantages:** Simple and fast.
+- **Limitations:** Reduces variance, introduces bias if data is not MCAR.
+- Commonly used as a baseline method in many studies [@pedersen2017missing].
 
--   Describe your data sources and collection process.
+</details>
 
--   Present initial findings and insights through visualizations.
+<details>
+<summary><strong>2. Regression Imputation</strong></summary>
 
--   Highlight unexpected patterns or anomalies.
+- Uses regression models to predict missing values based on other variables in the dataset.
+- Linear regression for numerical, logistic/multinomial for categorical variables.
+- **Advantages:** Maintains variable relationships.
+- **Limitations:** Assumes linearity, may underestimate variability [@farhangfar2007novel].
+
+</details>
+
+<details>
+<summary><strong>3. K-Nearest Neighbors (KNN) Imputation</strong></summary>
+
+- Identifies the 'k' most similar records and imputes missing values from their averages (or modes).
+- **Advantages:** No assumption about data distribution; works well with non-linear patterns.
+- **Limitations:** Slower for large datasets; sensitive to scaling [@stekhoven2012missforest].
+
+</details>
+
 
 ## Data Exploration and Visualization {.smaller}
 
-A study was conducted to determine how...
+### Overview
 
-```{r, warning=FALSE, echo=F, message=FALSE}
-# loading packages 
+This section explores the Titanic dataset in detail, analyzing missing values, variable relationships, and patterns using visualizations and statistical summaries.
+
+## Data Set
+-The Titanic dataset from Kaggle is a widely used dataset for data analysis and machine learning projects. It contains information about the passengers aboard the Titanic, including whether they survived or not. The dataset includes features such as:
+
+- PassengerId: A unique identifier for each passenger.
+-	Survived: Whether the passenger survived (1) or not (0).
+-	Pclass: The ticket class (1st, 2nd, or 3rd), which is a proxy for socio-economic status.
+-	Name: The name of the passenger.
+
+## Data set Continued..
+-	Sex: The gender of the passenger (male or female).
+-	Age: The age of the passenger.
+-	Fare: The fare paid for the ticket.
+-	Cabin: The cabin number (many missing values).
+-	Embarked: The port of embarkation (C = Cherbourg, Q = Queenstown, S = Southampton).
+
+
+## Missing Values Analysis {.smaller}
+
+::: {.panel-tabset}
+
+### Summary Table
+
+```{r, fig.height=3, fig.width=6}
 library(tidyverse)
-library(knitr)
-library(ggthemes)
-library(ggrepel)
-library(dslabs)
+library(naniar)
+train <- read.csv("train.csv")
+train <- train %>% mutate(Cabin = na_if(Cabin, ""), Embarked = na_if(Embarked, ""))
+missing_data <- data.frame(
+  column_name = names(train),
+  missing_val = colSums(is.na(train)),
+  missing_percent = colSums(is.na(train))/nrow(train)*100
+)
+print(missing_data)
 ```
 
-```{r, warning=FALSE, echo=F}
-# Load Data
-#kable(head(murders))
+The Titanic dataset has missing values primarily in the Age and Cabin columns, with 177 (19.87%) and 687 (77.10%) missing entries, respectively. The Embarked column has only 2 (0.22%) missing values, which is negligible. All other columns, such as PassengerId, Survived, and Sex, are complete with no missing data, making them reliable for analysis.
 
-ggplot1 = murders %>% ggplot(mapping = aes(x=population/10^6, y=total)) 
+### Bar Chart
 
-  ggplot1 + geom_point(aes(col=region), size = 4) +
-  geom_text_repel(aes(label=abb)) +
-  scale_x_log10() +
-  scale_y_log10() +
-  geom_smooth(formula = "y~x", method=lm,se = F)+
-  xlab("Populations in millions (log10 scale)") + 
-  ylab("Total number of murders (log10 scale)") +
-  ggtitle("US Gun Murders in 2010") +
-  scale_color_discrete(name = "Region")+
-      theme_bw()
-  
+```{r, fig.height=3.5, fig.width=6}
+# Bar plot of missing values
+ggplot(missing_data, aes(x = column_name, y = missing_val)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Missing Values in Titanic Dataset", x = "Column", y = "Missing Count") +
+  theme_minimal()
+```
+
+Visual representation confirms 'Cabin' and 'Age' as critical for imputation. Helps prioritize efforts visually.
+- each column and their missingness compared in bar chart, cabin column has highest number of missing values.
+
+
+
+### Missingness Pattern
+
+```{r, fig.height=3, fig.width=6}
+vis_miss(train) +
+  labs(title = "Missingness Pattern in Dataset")
+```
+
+
+This matrix-style view shows which records have multiple missing fields. Useful to identify patterns of missingness: MCAR, MAR, or MNAR.
+
+
+:::
+
+---
+
+## Exploratory Visuals {.smaller}
+
+::: {.panel-tabset}
+
+### Survival Count
+
+```{r, fig.height=3.5, fig.width=5.5}
+# Plot 1
+ggplot(train, aes(x = factor(Survived))) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Survival Count", x = "Survived", y = "Count")
+```
+The plot shows that fewer passengers survived . This depiction emphasizes the survival rate imbalance in the data since it strongly affects both analytical processes and model predictions of survival estimates.
+
+### Gender vs Survival
+
+```{r, fig.height=3.5, fig.width=5.5}
+# Plot 2
+ggplot(train, aes(x = Sex, fill = factor(Survived))) +
+  geom_bar(position = "fill") +
+  labs(title = "Survival Rate by Gender", x = "Gender", y = "Proportion", fill = "Survived")
+```
+
+
+- We can see that more female passengers are survived than male passengers from total number of passengers.
+
+
+### Class vs Survival
+
+```{r, fig.height=2.6, fig.width=5.5}
+# Plot 3
+ggplot(train, aes(x = factor(Pclass), fill = factor(Survived))) +
+  geom_bar(position = "fill") +
+  labs(title = "Survival Rate by Passenger Class", x = "Class", y = "Proportion", fill = "Survived")
+```
+
+The stacked bar chart illustrates the survival rate of passengers by class on the Titanic. First-class passengers had the highest proportion of survivors, followed by second class, while third-class passengers had the lowest survival rate. Notably, the majority of third-class passengers did not survive, highlighting the disparity in survival chances based on socioeconomic status. This suggests that higher-class passengers likely had better access to lifeboats or evacuation assistance. The visualization underscores how passenger class played a significant role in determining survival during the disaster.
+
+:::
+
+---
+
+## Age and Correlation Visuals {.smaller}
+
+::: {.panel-tabset}
+
+### Age Boxplot by Survival
+
+```{r, fig.height=2.2, fig.width=5}
+# Plot 4
+train$Survived <- as.factor(train$Survived)
+ggplot(train, aes(x = Survived, y = Age, fill = Survived)) +
+  geom_boxplot() +
+  labs(title = "Age Distribution by Survival", x = "Survived", y = "Age")
+```
+
+- We can see that most survivors are in the 20–40 age range, so missing ages for survivors might be imputed with a value in that range.
+- Median Age: The median age of survivors (blue box) is slightly higher than that of non-survivors (red box).
+- Age Spread: Both groups have a similar spread of ages, meaning age alone may not be a strong factor in survival.
+-Most survivors (blue) and non-survivors (red) fall within 20–40 years, with survivors having a marginally higher median age. The overlapping IQRs indicate age’s limited predictive power unless combined with other features (e.g., class or gender)."
+
+
+### Age Histogram
+
+```{r, fig.height=2.8, fig.width=5}
+# Plot 5
+ggplot(train, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "gray", color = "black") +
+  labs(title = "Age Distribution", x = "Age", y = "Count")
+```
+
+The histogram now shows a sharp peak around age 28–30, with counts nearing 300, due to mean/mode imputation. The previously dominant 20–40 age range has reduced counts (100–150), as missing values were replaced by the central tendency. This creates an artificial cluster, reducing natural age variability. The change highlights how imputation can distort distributions, potentially affecting analysis.
+
+### Correlation Heatmap
+
+```{r, fig.height=3.5, fig.width=6}
+library(reshape2)
+cor_data <- train %>%
+  select(Age, Fare, SibSp, Parch, Survived) %>%
+  mutate(Survived = as.numeric(as.character(Survived))) %>%
+  na.omit()
+
+cor_matrix <- cor(cor_data)
+melted_cor_matrix <- melt(cor_matrix)
+
+ggplot(melted_cor_matrix, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 0) +
+  labs(title = "Correlation Heatmap", x = "", y = "", fill = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+This provides insights into relationships between key numerical variables in our dataset. Darker red indicates a strong positive correlation, while purple represents a negative correlation. For example, 'Fare' and 'Survived' show a positive correlation, suggesting passengers who paid higher fares had a higher survival rate. Identifying these relationships helps in understanding data patterns, which is crucial when handling missing values.
+
+:::
+
+## Modeling and Results {.smaller}
+
+### Overview
+This section compares different imputation methods — **Mean/Mode**, **Regression**, and **KNN** — using the Titanic dataset and evaluates their impact on survival prediction using logistic regression. Performance metrics and visual insights are provided.
+
+
+## Age Distribution Comparison {.smaller}
+
+::: {.panel-tabset}
+
+### Original Age Distribution
+
+```{r, fig.height=3, fig.width=6}
+# Original distribution before imputation
+library(ggplot2)
+ggplot(train, aes(x = Age)) + 
+  geom_histogram(fill = "red", alpha = 0.5, bins = 30) + 
+  ggtitle("Original Age Distribution") +
+  theme_minimal()
+```
+
+
+The original dataset shows a natural age spread, with most passengers between **20–40 years**. This distribution reflects real variability but contains 177 missing values.
+
+
+
+
+### Mean Imputation
+
+```{r, fig.height=3, fig.width=6}
+train_imputed1 <- train
+
+# Mean for Age
+mean_age <- mean(train_imputed1$Age, na.rm = TRUE)
+train_imputed1$Age <- ifelse(is.na(train_imputed1$Age), mean_age, train_imputed1$Age)
+
+# Mode for Embarked and Cabin
+mode_embarked <- names(sort(table(train_imputed1$Embarked), decreasing = TRUE))[1]
+train_imputed1$Embarked <- ifelse(is.na(train_imputed1$Embarked), mode_embarked, train_imputed1$Embarked)
+mode_cabin <- names(sort(table(train_imputed1$Cabin), decreasing = TRUE))[1]
+train_imputed1$Cabin <- ifelse(is.na(train_imputed1$Cabin), mode_cabin, train_imputed1$Cabin)
+
+ggplot(train_imputed1, aes(x = Age)) + 
+  geom_histogram(fill = "blue", alpha = 0.5, bins = 30) + 
+  ggtitle("Age Distribution after Mean Imputation") +
+  theme_minimal()
+```
+
+
+Mean imputation introduces an artificial **spike around 28–30 years**, replacing all missing ages with the same value. This causes loss of variability and distorts the original pattern.
+
+
+
+
+### Regression Imputation
+
+```{r, fig.height=3, fig.width=6}
+train_regression <- train
+age_model <- lm(Age ~ Pclass + Sex + SibSp + Parch + Fare, data = train_regression)
+missing_age <- is.na(train_regression$Age)
+train_regression$Age[missing_age] <- predict(age_model, newdata = train_regression[missing_age, ])
+
+# Embarked with multinomial logistic regression
+library(nnet)
+embarked_model <- multinom(Embarked ~ Pclass + Sex + Age + SibSp + Parch + Fare, data = train_regression)
+missing_embarked <- is.na(train_regression$Embarked)
+train_regression$Embarked[missing_embarked] <- predict(embarked_model, newdata = train_regression[missing_embarked, ])
+
+# Cabin imputed using mode
+top_cabin <- names(sort(table(train_regression$Cabin), decreasing = TRUE))[1]
+train_regression$Cabin <- ifelse(is.na(train_regression$Cabin), top_cabin, train_regression$Cabin)
+
+ggplot(train_regression, aes(x = Age)) + 
+  geom_histogram(fill = "green", alpha = 0.5, bins = 30) + 
+  ggtitle("Age Distribution after Regression Imputation") +
+  theme_minimal()
+```
+
+
+Regression-based imputation distributes predicted ages more smoothly across the range, **preserving natural variance** better than mean imputation.
+
+
+
+
+### KNN Imputation
+
+```{r, fig.height=3, fig.width=6}
+library(VIM)
+train_knn <- kNN(train, k = 5)
+
+ggplot(train_knn, aes(x = Age)) +
+  geom_histogram(fill = "gold", alpha = 0.5, bins = 30) +
+  ggtitle("Age Distribution after KNN Imputation") +
+  theme_minimal()
+```
+
+
+KNN Imputation preserves the original distribution **most effectively**, capturing local patterns and producing the most realistic fill-ins for missing ages.
+
+
+:::
+
+## Imputation Comparisons {.smaller}
+
+::: {.panel-tabset}
+
+### Mean and Mode Imputation
+
+```{r, fig.height=3.5, fig.width=6}
+train_imputed1 <- train
+
+# Mean for Age
+mean_age <- mean(train_imputed1$Age, na.rm = TRUE)
+train_imputed1$Age <- ifelse(is.na(train_imputed1$Age), mean_age, train_imputed1$Age)
+
+# Mode for Embarked and Cabin
+mode_embarked <- names(sort(table(train_imputed1$Embarked), decreasing = TRUE))[1]
+train_imputed1$Embarked <- ifelse(is.na(train_imputed1$Embarked), mode_embarked, train_imputed1$Embarked)
+mode_cabin <- names(sort(table(train_imputed1$Cabin), decreasing = TRUE))[1]
+train_imputed1$Cabin <- ifelse(is.na(train_imputed1$Cabin), mode_cabin, train_imputed1$Cabin)
+
+# Visualize Age
+ggplot(train_imputed1, aes(x = Age)) +
+  geom_histogram(binwidth = 5, fill = "gray", color = "black") +
+  labs(title = "Age Distribution After Mean Imputation", x = "Age", y = "Count")
+```
+
+Mean imputation causes a sharp artificial peak around 28–30 years. It distorts the original distribution and reduces variability.
+
+
+### Regression Imputation
+
+```{r, fig.height=2, fig.width=4.5}
+train_regression <- train
+age_model <- lm(Age ~ Pclass + Sex + SibSp + Parch + Fare, data = train_regression)
+missing_age <- is.na(train_regression$Age)
+train_regression$Age[missing_age] <- predict(age_model, newdata = train_regression[missing_age, ])
+
+# Embarked with multinomial logistic regression
+library(nnet)
+embarked_model <- multinom(Embarked ~ Pclass + Sex + Age + SibSp + Parch + Fare, data = train_regression)
+missing_embarked <- is.na(train_regression$Embarked)
+train_regression$Embarked[missing_embarked] <- predict(embarked_model, newdata = train_regression[missing_embarked, ])
+
+# Cabin imputed using mode
+top_cabin <- names(sort(table(train_regression$Cabin), decreasing = TRUE))[1]
+train_regression$Cabin <- ifelse(is.na(train_regression$Cabin), top_cabin, train_regression$Cabin)
+
+# Age plot after regression imputation
+ggplot(train_regression, aes(x = Age)) +
+  geom_histogram(fill = "green", alpha = 0.6, bins = 30) +
+  labs(title = "Age Distribution After Regression Imputation", x = "Age", y = "Count")
 
 ```
 
-## Modeling and Results
 
--   Explain your data preprocessing and cleaning steps.
+Regression imputation maintains a more realistic distribution and spreads values more naturally than mean imputation.
 
--   Present your key findings in a clear and concise manner.
 
--   Use visuals to support your claims.
+### KNN Imputation
 
--   **Tell a story about what the data reveals.**
+```{r, fig.height=3, fig.width=5.5}
+library(VIM)
+train_knn <- kNN(train, k = 5)
+
+# Visualize KNN-imputed Age
+ggplot(train_knn, aes(x = Age)) +
+  geom_histogram(fill = "gold", alpha = 0.5, bins = 30) +
+  labs(title = "Age Distribution After KNN Imputation", x = "Age", y = "Count")
+```
+<small>
+
+- Original Data shows a natural spread of passenger ages (mostly 20-40 years).
+
+- Mean Imputation creates an unrealistic spike at one age (28-30), making the data look artificial.
+
+- Regression and KNN Imputation preserve the original pattern better - ages remain spread out like real data.
+
+-Mean imputation distorts the data by forcing all missing ages to be similar, while regression and KNN methods keep the natural variation we see in the original dataset. For accurate analysis, regression or KNN work better than simple mean replacement.
+</small>
+:::
+
+
+---
+## Model Performance Comparison {.smaller}
+
+::: {.panel-tabset}
+
+```{r, fig.height=2, fig.width=5}
+model_formula <- Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked
+
+logit_mean <- glm(model_formula, data = train_imputed1, family = "binomial")
+logit_reg <- glm(model_formula, data = train_regression, family = "binomial")
+logit_knn <- glm(model_formula, data = train_knn, family = "binomial")
+
+### Logistic Regression Models,#Three logistic models were fit using different imputed datasets. Next we evaluate predictions and compare accuracy.
+```
+
+
+### Confusion Matrix & Accuracy
 
 ```{r}
+library(caret)
 
+train_imputed1$Survived <- as.factor(train_imputed1$Survived)
+train_regression$Survived <- as.factor(train_regression$Survived)
+train_knn$Survived <- as.factor(train_knn$Survived)
+
+pred_mean <- as.factor(ifelse(predict(logit_mean, type = "response") > 0.5, 1, 0))
+pred_reg <- as.factor(ifelse(predict(logit_reg, type = "response") > 0.5, 1, 0))
+pred_knn <- as.factor(ifelse(predict(logit_knn, type = "response") > 0.5, 1, 0))
+
+conf_matrix_mean <- confusionMatrix(pred_mean, train_imputed1$Survived)
+conf_matrix_reg <- confusionMatrix(pred_reg, train_regression$Survived)
+conf_matrix_knn <- confusionMatrix(pred_knn, train_knn$Survived)
+
+conf_matrix_mean$overall['Accuracy']
+conf_matrix_reg$overall['Accuracy']
+conf_matrix_knn$overall['Accuracy']
 ```
 
-## Conclusion
+- Accuracy (out of 1): Mean = 0.801, Regression = 0.808, KNN = 0.810. KNN performs best in this dataset.
+- Results show that KNN imputation performed the best in terms of accuracy, followed by regression imputation, and then mean/mode imputation.
 
--   Summarize your key findings.
+### Metrics Table
 
--   Discuss the implications of your results.
+```{r}
+metrics <- function(conf_matrix) {
+  data.frame(
+    Accuracy = conf_matrix$overall['Accuracy'],
+    Sensitivity = conf_matrix$byClass['Sensitivity'],
+    Specificity = conf_matrix$byClass['Specificity'],
+    F1_Score = conf_matrix$byClass['F1']
+  )
+}
 
-## References
+rbind(
+  Mean = metrics(conf_matrix_mean),
+  Regression = metrics(conf_matrix_reg),
+  KNN = metrics(conf_matrix_knn)
+)
+```
+KNN again shows strongest F1 and balanced performance. Useful when data is imbalanced or multi-modal.
+
+### Performance Bar Graph
+
+```{r, fig.height=2, fig.width=6}
+library(tidyr)
+results <- data.frame(
+  Method = c("Mean/Mode", "Regression", "KNN"),
+  Accuracy = c(0.801, 0.808, 0.810),
+  F1_Score = c(conf_matrix_mean$byClass['F1'], 
+               conf_matrix_reg$byClass['F1'],
+               conf_matrix_knn$byClass['F1'])
+) %>% pivot_longer(-Method, names_to = "Metric")
+
+ggplot(results, aes(Method, value, fill = Metric)) +
+  geom_col(position = "dodge") +
+  labs(title = "Model Performance Comparison", y = "Score", x = "Imputation Method") +
+  scale_fill_brewer(palette = "Set1") +
+  theme_minimal()
+```
+<small>
+
+This comparison shows how different methods for handling missing data affect our model's predictions:
+-KNN imputation works best (0.81 accuracy), preserving complex patterns in the data.
+-Regression comes close (0.808 accuracy), using statistical relationships to fill gaps.
+-Simple mean/mode replacement performs worst (0.801 accuracy), as averages can't capture real-world variability.
+
+The F1-scores (0.85 for KNN) confirm this ranking, especially important since our survival data is imbalanced.
+
+</small>
+
+:::
+
+## Coefficient Importance {.smaller}
+
+```{r, fig.height=3.5, fig.width=6}
+library(broom)
+coef_mean <- tidy(logit_mean) %>% mutate(Method = "Mean/Mode")
+coef_reg <- tidy(logit_reg) %>% mutate(Method = "Regression")
+coef_knn <- tidy(logit_knn) %>% mutate(Method = "KNN")
+coefs <- rbind(coef_mean, coef_reg, coef_knn)
+
+ggplot(coefs %>% filter(term != "(Intercept)"),
+       aes(x = term, y = estimate, color = Method)) +
+  geom_point(size = 3) +
+  coord_flip() +
+  labs(title = "Variable Importance Across Models",
+       x = "Variables",
+       y = "Coefficient") +
+  theme_minimal()
+```
+<small>
+
+- Gender Dominance: "Sexmale" shows the strongest negative impact (-8 to -10 coefficient), confirming males had significantly lower survival rates regardless of imputation method.
+
+- Class & Wealth Matter: Pclass (negative) and Fare (positive) reveal poorer passengers (3rd class) fared worse, while wealthier ones (higher fares) survived more—consistent across all methods.
+
+- Age’s  Role: Age hovers near zero, implying it had limited influence compared to gender/class, though KNN slightly increased its importance (closer to +1).
+
+- Port Irrelevance: Embarked features (C/Q/S) show near-zero coefficients, proving boarding location had minimal survival impact—a useful insight for model simplification.
+
+This confirms gender and wealth were primary survival drivers, while age/boarding port were secondary—critical for interpreting Titanic survival patterns accurately.
+</small>
+
+## Accuracy Comparison {.smaller}
+
+```{r, fig.height=2, fig.width=4.5}
+library(caret)
+acc <- data.frame(
+  Method = c("Mean/Mode", "Regression", "KNN"),
+  Accuracy = c(0.801, 0.808, 0.810),
+  F1_Score = c(0.842, 0.848, 0.850)
+)
+
+ggplot(acc, aes(x = Method, y = Accuracy, fill = Method)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Model Accuracy by Imputation Method") +
+  theme_minimal()
+```
+<small>
+This bar chart compares the accuracy of logistic regression models trained using three different imputation techniques:
+
+- KNN Imputation achieved the highest accuracy of 81.0%, showing its ability to capture complex relationships and retain data integrity.
+
+- Regression Imputation follows closely with 80.8%, offering a balance of efficiency and accuracy assuming linearity.
+
+- Mean/Mode Imputation, while simple, resulted in the lowest accuracy (80.1%), mainly due to the distortion of real-world data patterns.
+
+The results suggest that advanced imputation methods can significantly improve model performance and are preferred in predictive modeling tasks.
+
+</small>
+
+## Variable Importance {.smaller}
+
+```{r, fig.height=2, fig.width=4.5}
+library(broom)
+logit_mean <- glm(Survived ~ Pclass + Sex + Age + Fare + Embarked, family = "binomial", data = train_imputed1)
+coef_mean <- tidy(logit_mean)
+
+ggplot(coef_mean %>% filter(term != "(Intercept)"), aes(x = term, y = estimate)) +
+  geom_bar(stat = "identity", fill = "darkgreen") +
+  coord_flip() +
+  labs(title = "Variable Importance from Logistic Model")
+```
+<small>
+This horizontal bar chart shows the coefficient estimates from a logistic regression model using Mean/Mode imputed data. Each bar reflects how much a particular feature influences the prediction of survival:
+
+- Sex (male) has the most negative impact, confirming that males had lower chances of survival.
+
+- Fare has a positive impact—passengers who paid higher fares had better survival chances, often tied to socioeconomic class.
+
+- Pclass shows a negative relationship, indicating lower class passengers had lower survival probabilities.
+
+- Embarked features have negligible influence, suggesting boarding location did not significantly affect survival.
+
+This insight helps identify which features are most relevant for model prediction and interpretation.
+</small>
+
+
+## Conclusion {.smaller}
+
+Objective Achieved: Successfully compared three imputation methods (Mean/Mode, Regression, KNN) for handling missing data in the Titanic dataset.
+
+- The project effectively compared **three imputation techniques**—Mean/Mode, Regression, and KNN—applied to the Titanic dataset.
+- Each method was assessed based on its ability to preserve data patterns and improve logistic regression model performance.
+- Results showed that:
+  - **KNN Imputation** provided the most accurate predictions and best preserved data characteristics.
+  - **Regression Imputation** was close in performance but relies on assumptions of linearity.
+  - **Mean/Mode Imputation** was the least effective, introducing distortions and artificial uniformity.
+  - Based on our imputation results, the missingness in the Titanic dataset is most likely Missing at Random (MAR).
+These results suggest that the missing values are related to other observed variables, not completely random (MCAR) or dependent on unobserved data (MNAR).
+
+## Best Imputation Method:
+
+KNN Imputation achieved the highest accuracy (81.0%) by intelligently filling missing values based on similar passengers.
+
+Regression Imputation was a close second (80.8%), using statistical relationships.
+
+Mean/Mode performed worst (80.1%), as it oversimplified the data.
+
+## Top Survival Influencers:
+
+Gender (Sex_male) was the strongest predictor—being male drastically reduced survival chances.
+
+Wealth (Fare and Pclass):
+
+Higher fares improved survival.
+
+Lower-class passengers (3rd class) had significantly worse outcomes.
+
+Age had minor impact, while boarding port (Embarked) mattered very little.
+
+## Implications {.smaller}
+
+For Data Quality:
+
+Use KNN/Regression for accurate models—they preserve real patterns. Avoid mean imputation for critical tasks.
+
+For Predictive Modeling:
+
+Focus on gender, class, and fare—they drive survival predictions. Ignore weak factors (e.g., Embarked) to simplify models.
+
+For Fairness:
+
+Mean imputation’s distortion of age/class relationships could hide socioeconomic biases. Advanced methods (KNN) mitigate this.
+
+
+## Limitations {.smaller}
+
+- Computational Cost: KNN is slower than regression/mean—may not suit huge datasets.
+
+- Assumptions: Regression assumes linear relationships; KNN assumes similar neighbors exist.
+
+- Generalizability: Results are specific to the Titanic dataset. Test on other datasets to confirm trends.
+
+
+
+## Final Recommendation {.smaller}
+
+"For reliable predictions, use KNN imputation and prioritize gender/class/wealth features. Mean imputation is only for quick drafts. Always check how missing data handling affects your model’s fairness and accuracy."
+
+
+> "Missing data isn’t just an inconvenience—it’s a key decision point in any analysis. Thoughtful imputation strengthens not only your model but the credibility of your findings."
+
+
+"Let data guide your decisions — even when it’s incomplete."
+
+## THANK YOU...!

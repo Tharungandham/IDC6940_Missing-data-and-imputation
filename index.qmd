@@ -23,7 +23,8 @@ header-includes:
       }
     </style>
 ---
-
+Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
+to edit)
 
 ## Introduction
 
