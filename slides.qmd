@@ -30,17 +30,6 @@ editor:
     wrap: 72
 ---
 
-::: callout-important
-**Remember:** Your goal is to make your audience understand and care
-about your findings. By crafting a compelling story, you can effectively
-communicate the value of your data science project.
-
-Carefully read this template since it has instructions and tips to
-writing!
-
-More information about `revealjs`:
-<https://quarto.org/docs/reference/formats/presentations/revealjs.html>
-:::
 
 ## Introduction {.smaller}
 
@@ -295,7 +284,7 @@ ggplot(train, aes(x = Age)) +
   labs(title = "Age Distribution", x = "Age", y = "Count")
 ```
 
-The histogram now shows a sharp peak around age 28–30, with counts nearing 300, due to mean/mode imputation. The previously dominant 20–40 age range has reduced counts (100–150), as missing values were replaced by the central tendency. This creates an artificial cluster, reducing natural age variability. The change highlights how imputation can distort distributions, potentially affecting analysis.
+The histogram displays the distribution of passenger ages. The majority of passengers fall within the 20–40 age range, with a peak around the early twenties. A smaller number of passengers are younger children or older adults, with very few above 60. The distribution is right-skewed, indicating more younger passengers compared to older ones. This visualization helps understand the overall age demographics and can guide imputation strategies for missing age values.
 
 ### Correlation Heatmap
 
@@ -415,81 +404,6 @@ ggplot(train_knn, aes(x = Age)) +
   ggtitle("Age Distribution after KNN Imputation") +
   theme_minimal()
 ```
-
-
-KNN Imputation preserves the original distribution **most effectively**, capturing local patterns and producing the most realistic fill-ins for missing ages.
-
-
-:::
-
-## Imputation Comparisons {.smaller}
-
-::: {.panel-tabset}
-
-### Mean and Mode Imputation
-
-```{r, fig.height=3.5, fig.width=6}
-train_imputed1 <- train
-
-# Mean for Age
-mean_age <- mean(train_imputed1$Age, na.rm = TRUE)
-train_imputed1$Age <- ifelse(is.na(train_imputed1$Age), mean_age, train_imputed1$Age)
-
-# Mode for Embarked and Cabin
-mode_embarked <- names(sort(table(train_imputed1$Embarked), decreasing = TRUE))[1]
-train_imputed1$Embarked <- ifelse(is.na(train_imputed1$Embarked), mode_embarked, train_imputed1$Embarked)
-mode_cabin <- names(sort(table(train_imputed1$Cabin), decreasing = TRUE))[1]
-train_imputed1$Cabin <- ifelse(is.na(train_imputed1$Cabin), mode_cabin, train_imputed1$Cabin)
-
-# Visualize Age
-ggplot(train_imputed1, aes(x = Age)) +
-  geom_histogram(binwidth = 5, fill = "gray", color = "black") +
-  labs(title = "Age Distribution After Mean Imputation", x = "Age", y = "Count")
-```
-
-Mean imputation causes a sharp artificial peak around 28–30 years. It distorts the original distribution and reduces variability.
-
-
-### Regression Imputation
-
-```{r, fig.height=2, fig.width=4.5}
-train_regression <- train
-age_model <- lm(Age ~ Pclass + Sex + SibSp + Parch + Fare, data = train_regression)
-missing_age <- is.na(train_regression$Age)
-train_regression$Age[missing_age] <- predict(age_model, newdata = train_regression[missing_age, ])
-
-# Embarked with multinomial logistic regression
-library(nnet)
-embarked_model <- multinom(Embarked ~ Pclass + Sex + Age + SibSp + Parch + Fare, data = train_regression)
-missing_embarked <- is.na(train_regression$Embarked)
-train_regression$Embarked[missing_embarked] <- predict(embarked_model, newdata = train_regression[missing_embarked, ])
-
-# Cabin imputed using mode
-top_cabin <- names(sort(table(train_regression$Cabin), decreasing = TRUE))[1]
-train_regression$Cabin <- ifelse(is.na(train_regression$Cabin), top_cabin, train_regression$Cabin)
-
-# Age plot after regression imputation
-ggplot(train_regression, aes(x = Age)) +
-  geom_histogram(fill = "green", alpha = 0.6, bins = 30) +
-  labs(title = "Age Distribution After Regression Imputation", x = "Age", y = "Count")
-
-```
-
-
-Regression imputation maintains a more realistic distribution and spreads values more naturally than mean imputation.
-
-
-### KNN Imputation
-
-```{r, fig.height=3, fig.width=5.5}
-library(VIM)
-train_knn <- kNN(train, k = 5)
-
-# Visualize KNN-imputed Age
-ggplot(train_knn, aes(x = Age)) +
-  geom_histogram(fill = "gold", alpha = 0.5, bins = 30) +
-  labs(title = "Age Distribution After KNN Imputation", x = "Age", y = "Count")
-```
 <small>
 
 - Original Data shows a natural spread of passenger ages (mostly 20-40 years).
@@ -500,8 +414,8 @@ ggplot(train_knn, aes(x = Age)) +
 
 -Mean imputation distorts the data by forcing all missing ages to be similar, while regression and KNN methods keep the natural variation we see in the original dataset. For accurate analysis, regression or KNN work better than simple mean replacement.
 </small>
-:::
 
+:::
 
 ---
 ## Model Performance Comparison {.smaller}

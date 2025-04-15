@@ -23,8 +23,7 @@ header-includes:
       }
     </style>
 ---
-Slides: [slides.html](slides.html){target="_blank"} ( Go to `slides.qmd`
-to edit)
+Slides: [slides.html](slides.html){target="_blank"} ()
 
 ## Introduction
 
@@ -338,6 +337,7 @@ X, Y &= \text{paired variables}, \\
 \end{align}
 $$
 
+
 ## Analysis and Results
 
 #### Mean and Mode Imputation
@@ -634,6 +634,9 @@ This confirms gender and wealth were primary survival drivers, while age/boardin
 ### Conclusion
 
 Objective Achieved: Successfully compared three imputation methods (Mean/Mode, Regression, KNN) for handling missing data in the Titanic dataset.
+Based on our imputation results, the missingness in the Titanic dataset is most likely Missing at Random (MAR).
+This conclusion is supported by the higher performance of KNN imputation (accuracy: 0.81, F1-score: 0.85) and regression imputation (accuracy: 0.808), compared to simple mean/mode imputation (accuracy: 0.801).
+These results suggest that the missing values are related to other observed variables, not completely random (MCAR) or dependent on unobserved data (MNAR).
 
 ##### Best Imputation Method:
 

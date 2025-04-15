@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Tharun Teja Gandham &amp; Mourya Rai Papolu (Advisor: Dr. Cohen)">
-<meta name="dcterms.date" content="2025-04-10">
+<meta name="dcterms.date" content="2025-04-14">
 
 <title>Missing Data and Imputation</title>
 <style>
@@ -3267,7 +3267,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 10, 2025</p>
+      <p class="date">April 14, 2025</p>
     </div>
   </div>
   
@@ -3279,7 +3279,7 @@ window.Quarto = {
 </header>
 
 
-<p>Slides: <a href="slides.html" target="_blank">slides.html</a> ( Go to <code>slides.qmd</code> to edit)</p>
+<p>Slides: <a href="slides.html" target="_blank">slides.html</a> ()</p>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>Across healthcare, social sciences and finance sectors missing data continues as an extensive problem because it creates biased outcomes and reduces research reliability and weakens research conclusions unless appropriate data handling methods are used <span class="citation" data-cites="salgado2016missing">(<a href="#ref-salgado2016missing" role="doc-biblioref">Salgado et al. 2016</a>)</span>. The Electronic Health Records (EHR) dataset faces high vulnerability to missing data from technological breakdowns as well as human mistakes and data loss incidents. In various fields missing data originates from survey non-responses and equipment failures as well as data entry errors <span class="citation" data-cites="alwateer2024missing">(<a href="#ref-alwateer2024missing" role="doc-biblioref">Alwateer et al. 2024</a>)</span>. Improper handling of missing data leads to severe consequences on the quality of research findings and decision-making processes particularly when analyzing clinical epidemiology and structured datasets.</p>
@@ -4110,7 +4110,7 @@ KNN        0.8103255   0.8724954   0.7105263 0.8500444</code></pre>
 </section>
 <section id="conclusion" class="level3">
 <h3 class="anchored" data-anchor-id="conclusion">Conclusion</h3>
-<p>Objective Achieved: Successfully compared three imputation methods (Mean/Mode, Regression, KNN) for handling missing data in the Titanic dataset.</p>
+<p>Objective Achieved: Successfully compared three imputation methods (Mean/Mode, Regression, KNN) for handling missing data in the Titanic dataset. Based on our imputation results, the missingness in the Titanic dataset is most likely Missing at Random (MAR). This conclusion is supported by the higher performance of KNN imputation (accuracy: 0.81, F1-score: 0.85) and regression imputation (accuracy: 0.808), compared to simple mean/mode imputation (accuracy: 0.801). These results suggest that the missing values are related to other observed variables, not completely random (MCAR) or dependent on unobserved data (MNAR).</p>
 <section id="best-imputation-method" class="level5">
 <h5 class="anchored" data-anchor-id="best-imputation-method">Best Imputation Method:</h5>
 <p>KNN Imputation achieved the highest accuracy (81.0%) by intelligently filling missing values based on similar passengers.</p>
